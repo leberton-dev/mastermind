@@ -5,7 +5,8 @@ from mastermind.core.colors import Color
 
 _MAX_TURNS = 10
 
-def main():
+
+def play():
     secret_code: list[Color] = bot.secret.random_code()
 
     for _ in range(_MAX_TURNS):
@@ -18,6 +19,13 @@ def main():
     print("You lost.")
 
 
+def main():
+    playing = True
+
+    while playing:
+        play()
+        if input("Do you want to play again ? (y/N) >> ").lower() == "n":
+            playing = False
 
 
 if __name__ == "__main__":
