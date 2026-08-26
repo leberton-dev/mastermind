@@ -1,19 +1,19 @@
 from mastermind.core.colors import Color
 
-def feedback(original: list[Color], answer: list[Color]) -> tuple[int, int]:
+def feedback(secret: list[Color], guess: list[Color]) -> tuple[int, int]:
 
-    if len(original) != 4:
+    if len(secret) != 4:
         raise ValueError("original should be of length 4")
-    if len(answer) != 4:
+    if len(guess) != 4:
         raise ValueError("answer should be of length 4")
 
-    correct_pos_and_color: int = 0
-    correct_color: int = 0
+    black_pegs: int = 0
+    white_pegs: int = 0
 
-    for idx, color in enumerate(answer):
-        if original[idx] == color:
-            correct_pos_and_color += 1
-        elif color in original:
-            correct_color += 1
+    for idx, color in enumerate(guess):
+        if secret[idx] == color:
+            black_pegs += 1
+        elif color in secret:
+            white_pegs += 1
 
-    return correct_pos_and_color, correct_color
+    return black_pegs, white_pegs

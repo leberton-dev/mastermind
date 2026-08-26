@@ -1,1 +1,1 @@
-from . import score
+from . import score, secret
