@@ -2,8 +2,8 @@
 import curses
 from curses.textpad import rectangle
 
-from mastermind.core.colors import Color
 from mastermind.core.feedback import Feedback
+from mastermind.core.code import Code
 from mastermind.ui import palette
 
 
@@ -14,7 +14,7 @@ def _fill_rectangle(stdscr: curses.window, y_start: int, y_end: int, x_start: in
         stdscr.chgat(y, x_start, x_end, attr)
 
 
-def draw_guess_squares(stdscr: curses.window, square_idx: int, guess_squares: list[Color]) -> None:
+def draw_guess_squares(stdscr: curses.window, square_idx: int, guess_squares: Code) -> None:
     square_width = 7
     square_height = 3
     y_pos = curses.LINES - square_height - _BOTTOM_PADDING
@@ -32,7 +32,7 @@ def draw_guess_squares(stdscr: curses.window, square_idx: int, guess_squares: li
         x_pos += square_width + 1
 
 
-def draw_guessed_squares(stdscr: curses.window, guessed_squares: list[list[Color]], guessed_feedback: list[Feedback]) -> None:
+def draw_guessed_squares(stdscr: curses.window, guessed_squares: list[Code], guessed_feedback: list[Feedback]) -> None:
     if len(guessed_squares) == 0:
         return
 

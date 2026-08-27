@@ -1,15 +1,16 @@
 from mastermind.core.colors import Color
 from mastermind.core.feedback import Feedback
+from mastermind.core.code import Code
 
-def feedback(secret: list[Color], guess: list[Color]) -> Feedback:
+def feedback(secret: Code, guess: Code) -> Feedback:
 
     if len(secret) != 4:
         raise ValueError("original should be of length 4")
     if len(guess) != 4:
         raise ValueError("answer should be of length 4")
 
-    secret_copy = list(secret)
-    guess_copy = list(guess)
+    secret_copy: list[Color] = [c for c in secret]
+    guess_copy: list[Color] = [c for c in guess]
 
     black_pegs: int = _calculate_black_pegs(secret_copy, guess_copy)
     white_pegs: int = _calculate_white_pegs(secret_copy, guess_copy)
