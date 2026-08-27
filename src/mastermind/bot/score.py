@@ -7,13 +7,40 @@ def feedback(secret: list[Color], guess: list[Color]) -> tuple[int, int]:
     if len(guess) != 4:
         raise ValueError("answer should be of length 4")
 
+    secret_copy = list(secret)
+    guess_copy = list(guess)
+
+    black_pegs: int = _calculate_black_pegs(secret_copy, guess_copy)
+    white_pegs: int = _calculate_white_pegs(secret_copy, guess_copy)
+
+    return black_pegs, white_pegs
+
+
+def _calculate_black_pegs(secret: list[Color], guess: list[Color]) -> int:
     black_pegs: int = 0
-    white_pegs: int = 0
+    found_idx: list[int] = []
 
     for idx, color in enumerate(guess):
         if secret[idx] == color:
             black_pegs += 1
-        elif color in secret:
-            white_pegs += 1
+            found_idx.append(idx)
 
-    return black_pegs, white_pegs
+    for idx in reversed(found_idx):
+        _ = secret.pop(idx)
+        _ = guess.pop(idx)
+
+    return black_pegs
+
+
+def _calculate_white_pegs(secret: list[Color], guess: list[Color]) -> int:
+    white_pegs: int = 0
+
+    for color in guess:
+        for s in secret:
+            if color == s:
+                white_pegs += 1
+                secret.remove(s)
+                break
+
+    return white_pegs
+
