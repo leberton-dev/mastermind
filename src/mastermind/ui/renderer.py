@@ -5,7 +5,7 @@ from mastermind.ui import palette
 from mastermind.core.code import Code
 from mastermind.gamestate import GameState
 
-from mastermind.core.feedback import Feedback
+from mastermind.core.feedback import CodeFeedback
 
 class Renderer:
     _BOTTOM_PADDING: int = 1
@@ -74,7 +74,7 @@ class Renderer:
             x_pos += square_width + 1
 
 
-    def _draw_guessed_squares(self, guessed_squares: list[Code], guessed_feedback: list[Feedback]) -> None:
+    def _draw_guessed_squares(self, guessed_squares: list[Code], guessed_feedback: list[CodeFeedback]) -> None:
         if len(guessed_squares) == 0:
             return
 
@@ -85,11 +85,11 @@ class Renderer:
 
         for idx, guess in enumerate(guessed_squares):
             x_pos = x_start
-            self._stdscr.addstr(y_pos, x_pos - 5, f"{guessed_feedback[idx].black}")
+            self._stdscr.addstr(y_pos, x_pos - 5, f"{guessed_feedback[idx].black_pegs}")
             for sq in guess:
                 attr = palette.to_curses_pair(sq)
                 rectangle(self._stdscr, y_pos, x_pos, y_pos + square_height, x_pos + square_width)
                 self._fill_rectangle(y_pos + 1, y_pos + square_height, x_pos + 1, square_width - 1, attr)
                 x_pos += square_width + 1
-            self._stdscr.addstr(y_pos, x_pos + 5, f"{guessed_feedback[idx].white}")
+            self._stdscr.addstr(y_pos, x_pos + 5, f"{guessed_feedback[idx].white_pegs}")
             y_pos += square_height + 1

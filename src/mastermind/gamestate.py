@@ -1,5 +1,5 @@
 from mastermind.core.colors import Color
-from mastermind.core.feedback import Feedback
+from mastermind.core.feedback import CodeFeedback
 from mastermind.core.code import Code
 
 class GameState:
@@ -10,7 +10,7 @@ class GameState:
         self._guess_squares: Code = Code.blank()
         self._secret_code: Code = Code.random()
         self._guessed_squares: list[Code] = []
-        self._guessed_feedback: list[Feedback] = []
+        self._guessed_feedback: list[CodeFeedback] = []
 
     @property
     def current_square(self) -> int:
@@ -29,7 +29,7 @@ class GameState:
         return self._guessed_squares
 
     @property
-    def guessed_feedback(self) -> list[Feedback]:
+    def guessed_feedback(self) -> list[CodeFeedback]:
         return self._guessed_feedback
 
     @property
@@ -42,7 +42,7 @@ class GameState:
 
     def submit_guess(self) -> None:
         self._guessed_squares.append(self._guess_squares)
-        feedback: Feedback = self._secret_code.feedback(self._guess_squares)
+        feedback: CodeFeedback = self._secret_code.feedback(self._guess_squares)
         self._guessed_feedback.append(feedback)
 
     def cycle_color(self, direction: int) -> None:

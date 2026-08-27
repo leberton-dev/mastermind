@@ -1,2 +1,2 @@
 from . import colors
-from .feedback import Feedback
+from .feedback import CodeFeedback
