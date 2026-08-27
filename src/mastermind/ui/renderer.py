@@ -20,8 +20,8 @@ class Renderer:
     def render(self, state: GameState) -> None:
         self._stdscr.clear()
         self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
-        self._draw_guessed_squares(state.guessed_squares, state.guessed_feedback)
-        self._draw_guess_squares(state.current_square, state.guess_squares)
+        self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
+        self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
         self._stdscr.refresh()
 
