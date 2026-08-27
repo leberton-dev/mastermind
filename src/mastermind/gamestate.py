@@ -1,4 +1,4 @@
-from mastermind.core.colors import Color
+from mastermind.core.colors import PegColor
 from mastermind.core.feedback import CodeFeedback
 from mastermind.core.code import Code
 

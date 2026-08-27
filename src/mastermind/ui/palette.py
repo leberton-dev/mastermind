@@ -1,6 +1,6 @@
 import curses
 
-from mastermind.core.colors import Color
+from mastermind.core.colors import PegColor
 
 
 def init_color_pairs() -> None:
@@ -13,14 +13,14 @@ def init_color_pairs() -> None:
     curses.init_pair(7, curses.COLOR_CYAN, curses.COLOR_BLACK)
 
 
-def to_curses_pair(color: Color) -> int:
-    color_to_curses: dict[Color, int] = {
-            Color.WHITE: curses.color_pair(1),
-            Color.ORANGE: curses.color_pair(2),
-            Color.BLUE: curses.color_pair(3),
-            Color.GREEN: curses.color_pair(4),
-            Color.RED: curses.color_pair(5),
-            Color.PURPLE: curses.color_pair(6)
+def to_curses_pair(color: PegColor) -> int:
+    color_to_curses: dict[PegColor, int] = {
+            PegColor.WHITE: curses.color_pair(1),
+            PegColor.ORANGE: curses.color_pair(2),
+            PegColor.BLUE: curses.color_pair(3),
+            PegColor.GREEN: curses.color_pair(4),
+            PegColor.RED: curses.color_pair(5),
+            PegColor.PURPLE: curses.color_pair(6)
     }
     return color_to_curses[color]
 
