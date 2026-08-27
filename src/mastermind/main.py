@@ -2,9 +2,8 @@ import curses
 from curses import wrapper
 
 from mastermind import ui
-from mastermind.screens.queue import ScreenQueue
+from mastermind.core.screen_manager import ScreenQueue, ScreenStack
 from mastermind.screens.menu import MenuScreen
-from mastermind.screens.stack import ScreenStack
 
 
 def _init_curses(stdscr: curses.window) -> None:

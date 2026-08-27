@@ -1,10 +1,9 @@
 import curses
 from typing import override
 
-from mastermind.screens.screen import Screen
-from mastermind.screens.queue import ScreenQueue
-from mastermind.screens.transition import ScreenTransition
+from mastermind.core.screen_manager import Screen, ScreenQueue, ScreenTransition
 from mastermind.core.gamestate import GameState
+from mastermind.screens.game_over import GameOverScreen
 from mastermind.ui.renderer import Renderer
 
 
@@ -59,19 +58,9 @@ class GameplayScreen(Screen):
     def _submit_guess(self) -> None:
         self._state.submit_guess()
 
-        if self._state.won:
-            self._renderer.win()
-            _ = self._stdscr.getch()
-            self._queue.push(ScreenTransition.pop())
-
-        if self._state.lost:
-            self._renderer.loose(f"Correct was {[c.name for c in self._state.secret_code]}")
-            _ = self._stdscr.getch()
-            self._queue.push(ScreenTransition.pop())
+        if self._state.game_over:
+            game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
+            self._queue.push(ScreenTransition.push(game_over))
 
         self._state.reset_current_guess()
-
-
-
-
 

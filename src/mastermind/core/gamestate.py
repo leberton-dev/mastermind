@@ -37,7 +37,11 @@ class GameState:
 
     @property
     def lost(self) -> bool:
-        return len(self._guessed_feedback) >= self._MAX_TURNS and not self._guessed_feedback[-1].won
+        return len(self._guessed_feedback) >= self._MAX_TURNS
+
+    @property
+    def game_over(self) -> bool:
+        return self.lost or self.won
 
     def submit_guess(self) -> None:
         self._guessed_codes.append(self._current_code)

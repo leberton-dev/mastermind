@@ -1,11 +1,8 @@
 import curses
-from curses.textpad import rectangle
 
 from typing import override
 
-from mastermind.screens.screen import Screen
-from mastermind.screens.queue import ScreenQueue
-from mastermind.screens.transition import ScreenTransition
+from mastermind.core.screen_manager import Screen, ScreenQueue, ScreenTransition
 from mastermind.screens.gameplay import GameplayScreen
 
 
@@ -83,6 +80,4 @@ class MenuScreen(Screen):
             else:
                 self._stdscr.addstr(start_y, start_x, line, attr)
             start_y += 1
-
-
 

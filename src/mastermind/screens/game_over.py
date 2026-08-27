@@ -1,18 +1,22 @@
 import curses
 from typing import override
 
-from mastermind.screens.screen import Screen
-from mastermind.screens.queue import ScreenQueue
+from mastermind.core.screen_manager import Screen, ScreenQueue, ScreenTransition
+from mastermind.ui.renderer import Renderer
+from mastermind.core.gamestate import GameState
 
 
 class GameOverScreen(Screen):
-    def __init__(self, stdscr: curses.window, queue: ScreenQueue, opaque: bool = False) -> None:
-        super().__init__(stdscr, queue, opaque)
+    def __init__(self, stdscr: curses.window, queue: ScreenQueue, renderer: Renderer, state: GameState) -> None:
+        super().__init__(stdscr, queue, False)
+        self._renderer: Renderer = renderer
+        self._state: GameState = state
 
 
     @override
     def handle_input(self, key: int) -> None:
-        pass
+        self._queue.push(ScreenTransition.pop())
+        self._queue.push(ScreenTransition.pop())
 
 
     @override
@@ -22,4 +26,7 @@ class GameOverScreen(Screen):
 
     @override
     def render(self) -> None:
-        pass
+        if self._state.won:
+            self._renderer.win()
+        else:
+            self._renderer.loose(f"Correct was {[c.name for c in self._state.secret_code]}")
