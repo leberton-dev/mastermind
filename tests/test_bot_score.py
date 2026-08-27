@@ -39,6 +39,12 @@ def test_feedback_repeated_color_one_exact_one_color_match():
 
     assert bot.score.feedback(original, answer) == (1, 1)
 
+def test_feedback_single_color_repeated_twice_in_answer_match():
+    original = [Color.RED, Color.ORANGE, Color.ORANGE, Color.BLUE]
+    answer = [Color.RED, Color.RED, Color.ORANGE, Color.BLUE]
+    
+    assert bot.score.feedback(original, answer) == (3, 0)
+
 
 def test_feedback_raises_when_original_too_short():
     original = [Color.WHITE]
