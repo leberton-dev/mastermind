@@ -22,8 +22,14 @@ class Renderer:
         self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
         self._draw_guessed_squares(state.guessed_squares, state.guessed_feedback)
         self._draw_guess_squares(state.current_square, state.guess_squares)
+        self._render_commands()
         self._stdscr.refresh()
 
+
+    def _render_commands(self) -> None:
+        self._stdscr.addstr(curses.LINES-3, 1, "LEFT/RIGHT: switch box")
+        self._stdscr.addstr(curses.LINES-2, 1, "TOP/DOWN: cycle trough colors")
+        self._stdscr.addstr(curses.LINES-1, 1, "ENTER: submit colors")
 
     def win(self) -> None:
         self._stdscr.addstr(
@@ -54,7 +60,7 @@ class Renderer:
         square_width = 7
         square_height = 3
         y_pos = curses.LINES - square_height - self._BOTTOM_PADDING
-        x_pos = (curses.COLS - (square_width*4)) // 2
+        x_pos = (curses.COLS - (square_width*4) - 4) // 2
 
         for i, sq in enumerate(guess_squares):
             attr = palette.to_curses_pair(sq)
@@ -74,7 +80,7 @@ class Renderer:
         square_height = curses.LINES // 16
         square_width = square_height * 2
         y_pos = 2
-        x_start = (curses.COLS - (square_width*4)) // 2
+        x_start = (curses.COLS - (square_width*4) - 4) // 2
 
         for idx, guess in enumerate(guessed_squares):
             x_pos = x_start

@@ -1,7 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import curses
 from curses import wrapper
-from typing import Callable, override
+from typing import Callable
 
 from mastermind import ui
 from mastermind.ui import Renderer
@@ -18,33 +18,14 @@ def _init_curses(stdscr: curses.window) -> None:
         raise Exception("Terminal does not have colors")
     ui.palette.init_color_pairs()
 
-class Action(ABC):
-    def __init__(self, stdscr: curses.window, state: GameState, renderer: Renderer) -> None:
-        self._stdscr: curses.window = stdscr
-        self._state: GameState = state
-        self._renderer: Renderer = renderer
+def _cycle_color_up(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
+    state.cycle_color(-1)
+    return True
 
-    @abstractmethod
-    def act(self) -> bool:
-        pass
+def _cycle_color_down(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
+    state.cycle_color(1)
+    return True
 
-class CycleColorUp(Action):
-    def __init__(self, stdscr: curses.window, state: GameState, renderer: Renderer) -> None:
-        super().__init__(stdscr, state, renderer)
-
-    @override
-    def act(self) -> bool:
-        self._state.cycle_color(-1)
-        return True
-
-class CycleColorDown(Action):
-    def __init__(self, stdscr: curses.window, state: GameState, renderer: Renderer) -> None:
-        super().__init__(stdscr, state, renderer)
-
-    @override
-    def act(self) -> bool:
-        self._state.cycle_color(1)
-        return True
 
 def _move_left(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
     state.cycle_current_square(-1)
