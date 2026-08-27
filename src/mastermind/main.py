@@ -27,6 +27,8 @@ def main(stdscr: curses.window):
     _ = curses.curs_set(0)
     stdscr.keypad(True)
 
+    curses.cbreak()
+    curses.noecho()
     curses.start_color()
     if not curses.has_colors():
         raise Exception("Terminal does not have colors")
@@ -34,9 +36,11 @@ def main(stdscr: curses.window):
 
     current_square: int = 0
     guess_squares: list[Color] = [Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]
+    guessed_squares: list[list[Color]] = []
     while True:
         stdscr.clear()
         stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
+        ui.board.draw_guessed_squares(stdscr, guessed_squares)
         ui.board.draw_guess_squares(stdscr, current_square, guess_squares)
         stdscr.refresh()
 
@@ -49,6 +53,10 @@ def main(stdscr: curses.window):
             current_square = (current_square - 1) % len(guess_squares)
         if key == curses.KEY_RIGHT:
             current_square = (current_square + 1) % len(guess_squares)
+        if key in (curses.KEY_ENTER, ord('\n'), ord('\r')):
+            guessed_squares.append(list(guess_squares))
+            guess_squares = [Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]
+            current_square = 0
         if key == ord('q'):
             break
 

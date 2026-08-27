@@ -6,7 +6,7 @@ from mastermind.core.colors import Color
 from mastermind.ui import palette
 
 
-_BOTTOM_PADDING = 5
+_BOTTOM_PADDING = 1
 
 def switch_guess_color(square_idx: int, direction: int, guess_squares: list[Color]) -> None:
     idx = (guess_squares[square_idx].value - 1 + direction) % len(Color)
@@ -33,3 +33,21 @@ def draw_guess_squares(stdscr: curses.window, square_idx: int, guess_squares: li
         _fill_rectangle(stdscr, y_pos + 1, y_pos + square_height, x_pos + 1, square_width - 1, attr)
         x_pos += square_width + 1
 
+
+def draw_guessed_squares(stdscr: curses.window, guessed_squares: list[list[Color]]) -> None:
+    if len(guessed_squares) == 0:
+        return
+
+    square_height = curses.LINES // 16
+    square_width = square_height * 2
+    y_pos = 2
+    x_start = (curses.COLS - (square_width*4)) // 2
+
+    for guess in guessed_squares:
+        x_pos = x_start
+        for sq in guess:
+            attr = palette.to_curses_pair(sq)
+            rectangle(stdscr, y_pos, x_pos, y_pos + square_height, x_pos + square_width)
+            _fill_rectangle(stdscr, y_pos + 1, y_pos + square_height, x_pos + 1, square_width - 1, attr)
+            x_pos += square_width + 1
+        y_pos += square_height + 1
