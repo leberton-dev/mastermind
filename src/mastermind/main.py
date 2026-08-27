@@ -1,5 +1,9 @@
+import curses
+from curses import wrapper
+
 import mastermind.bot as bot
 import mastermind.player as player
+from mastermind import ui
 
 from mastermind.core.colors import Color
 
@@ -19,14 +23,35 @@ def play():
     print("You lost.")
 
 
-def main():
-    playing = True
+def main(stdscr: curses.window):
+    _ = curses.curs_set(0)
+    stdscr.keypad(True)
 
-    while playing:
-        play()
-        if input("Do you want to play again ? (y/N) >> ").lower() == "n":
-            playing = False
+    curses.start_color()
+    if not curses.has_colors():
+        raise Exception("Terminal does not have colors")
+    ui.palette.init_color_pairs()
+
+    current_square: int = 0
+    guess_squares: list[Color] = [Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]
+    while True:
+        stdscr.clear()
+        stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
+        ui.board.draw_guess_squares(stdscr, current_square, guess_squares)
+        stdscr.refresh()
+
+        key = stdscr.getch()
+        if key == curses.KEY_UP:
+            ui.board.switch_guess_color(current_square, -1, guess_squares)
+        if key == curses.KEY_DOWN:
+            ui.board.switch_guess_color(current_square, 1, guess_squares)
+        if key == curses.KEY_LEFT:
+            current_square = (current_square - 1) % len(guess_squares)
+        if key == curses.KEY_RIGHT:
+            current_square = (current_square + 1) % len(guess_squares)
+        if key == ord('q'):
+            break
 
 
 if __name__ == "__main__":
-    main()
+    wrapper(main)
