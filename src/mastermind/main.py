@@ -1,11 +1,11 @@
-from abc import ABC
 import curses
 from curses import wrapper
-from typing import Callable
 
 from mastermind import ui
-from mastermind.ui import Renderer
-from mastermind.gamestate import GameState
+from mastermind.screens.queue import ScreenQueue
+from mastermind.screens.menu import MenuScreen
+from mastermind.screens.stack import ScreenStack
+
 
 def _init_curses(stdscr: curses.window) -> None:
     _ = curses.curs_set(0)
@@ -18,73 +18,16 @@ def _init_curses(stdscr: curses.window) -> None:
         raise Exception("Terminal does not have colors")
     ui.palette.init_color_pairs()
 
-def _cycle_color_up(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    state.cycle_color(-1)
-    return True
-
-def _cycle_color_down(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    state.cycle_color(1)
-    return True
-
-
-def _move_left(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    state.cycle_current_square(-1)
-    return True
-
-def _move_right(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    state.cycle_current_square(1)
-    return True
-
-def _quit(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    return False
-
-def _submit_guess(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    state.submit_guess()
-
-    if state.won:
-        renderer.win()
-        _ = stdscr.getch()
-        return False
-
-    if state.lost:
-        renderer.loose(f"Correct was : {[c.name for c in state.secret_code]}")
-        _ = stdscr.getch()
-        return False
-
-    state.reset_current_guess()
-
-    return True
-
-
-_KEY_ACTIONS: dict[int, Callable[[curses.window, GameState, Renderer], bool]] = {
-    curses.KEY_UP: _cycle_color_up,
-    curses.KEY_DOWN: _cycle_color_down,
-    curses.KEY_LEFT: _move_left,
-    curses.KEY_RIGHT: _move_right,
-    curses.KEY_ENTER: _submit_guess,
-    ord('\n'): _submit_guess,
-    ord('\r'): _submit_guess,
-    ord('q'): _quit
-}
-
-def _handle_input(stdscr: curses.window, state: GameState, renderer: Renderer) -> bool:
-    key = stdscr.getch()
-    action = _KEY_ACTIONS.get(key)
-    if action is None:
-        return True
-    return action(stdscr, state, renderer)
-
 
 def main(stdscr: curses.window):
     _init_curses(stdscr)
+    
+    queue: ScreenQueue = ScreenQueue()
+    menu: MenuScreen = MenuScreen(stdscr, queue)
+    stack: ScreenStack = ScreenStack(stdscr, queue, menu)
 
-    state = GameState()
-    renderer = Renderer(stdscr)
-
-    while True:
-        renderer.render(state)
-        if not _handle_input(stdscr, state, renderer):
-            break
+    while stack.step():
+        pass
 
 
 if __name__ == "__main__":
