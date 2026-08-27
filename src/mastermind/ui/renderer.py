@@ -41,12 +41,12 @@ class Renderer:
     def loose(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(
             curses.LINES // 2,
-            (curses.COLS + len(self._LOOSE_STR)) // 2,
+            (curses.COLS - len(self._LOOSE_STR)) // 2,
             self._LOOSE_STR,
             curses.A_STANDOUT)
         self._stdscr.addstr(
             curses.LINES // 2 + 1,
-            (curses.COLS + len(correct_guess_str)) // 2,
+            (curses.COLS - len(correct_guess_str)) // 2,
             correct_guess_str,
             curses.A_STANDOUT)
 
@@ -72,6 +72,7 @@ class Renderer:
 
             self._fill_rectangle(y_pos + 1, y_pos + square_height, x_pos + 1, square_width - 1, attr)
             x_pos += square_width + 1
+
 
     def _draw_guessed_squares(self, guessed_squares: list[Code], guessed_feedback: list[Feedback]) -> None:
         if len(guessed_squares) == 0:

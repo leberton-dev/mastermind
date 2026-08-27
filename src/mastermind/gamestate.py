@@ -1,7 +1,6 @@
 from mastermind.core.colors import Color
 from mastermind.core.feedback import Feedback
 from mastermind.core.code import Code
-from mastermind import bot
 
 class GameState:
     _MAX_TURNS: int = 10
@@ -43,7 +42,7 @@ class GameState:
 
     def submit_guess(self) -> None:
         self._guessed_squares.append(self._guess_squares)
-        feedback: Feedback = bot.score.feedback(self._secret_code, self._guess_squares)
+        feedback: Feedback = self._secret_code.feedback(self._guess_squares)
         self._guessed_feedback.append(feedback)
 
     def cycle_color(self, direction: int) -> None:

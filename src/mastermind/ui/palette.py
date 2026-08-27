@@ -3,7 +3,6 @@ import curses
 from mastermind.core.colors import Color
 
 
-
 def init_color_pairs() -> None:
     curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_WHITE)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_YELLOW)

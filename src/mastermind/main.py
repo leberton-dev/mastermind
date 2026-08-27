@@ -47,7 +47,7 @@ def _submit_guess(stdscr: curses.window, state: GameState, renderer: Renderer) -
         return False
 
     if state.lost:
-        renderer.loose(f"Correct was : {[c for c in state.secret_code]}")
+        renderer.loose(f"Correct was : {[c.name for c in state.secret_code]}")
         _ = stdscr.getch()
         return False
 
