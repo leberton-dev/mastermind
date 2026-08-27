@@ -3,7 +3,7 @@ from curses.textpad import rectangle
 
 from mastermind.ui import palette
 from mastermind.core.code import Code
-from mastermind.gamestate import GameState
+from mastermind.core.gamestate import GameState
 
 from mastermind.core.feedback import CodeFeedback
 

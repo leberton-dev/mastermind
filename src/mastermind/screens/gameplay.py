@@ -4,7 +4,7 @@ from typing import override
 from mastermind.screens.screen import Screen
 from mastermind.screens.queue import ScreenQueue
 from mastermind.screens.transition import ScreenTransition
-from mastermind.gamestate import GameState
+from mastermind.core.gamestate import GameState
 from mastermind.ui.renderer import Renderer
 
 
