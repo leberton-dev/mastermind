@@ -60,11 +60,13 @@ class GameplayScreen(Screen):
         self._state.submit_guess()
 
         if self._state.won:
-            #TODO : print winning message
+            self._renderer.win()
+            _ = self._stdscr.getch()
             self._queue.push(ScreenTransition.pop())
 
         if self._state.lost:
-            #TODO : print loosing message
+            self._renderer.loose(f"Correct was {[c.name for c in self._state.secret_code]}")
+            _ = self._stdscr.getch()
             self._queue.push(ScreenTransition.pop())
 
         self._state.reset_current_guess()
