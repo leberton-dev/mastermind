@@ -1,1 +1,2 @@
-from . import board, palette
+from . import palette
+from .renderer import Renderer
