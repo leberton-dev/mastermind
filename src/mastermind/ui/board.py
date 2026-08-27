@@ -3,15 +3,11 @@ import curses
 from curses.textpad import rectangle
 
 from mastermind.core.colors import Color
+from mastermind.core.feedback import Feedback
 from mastermind.ui import palette
 
 
 _BOTTOM_PADDING = 1
-
-def switch_guess_color(square_idx: int, direction: int, guess_squares: list[Color]) -> None:
-    idx = (guess_squares[square_idx].value - 1 + direction) % len(Color)
-    guess_squares[square_idx] = Color(idx + 1)
-
 
 def _fill_rectangle(stdscr: curses.window, y_start: int, y_end: int, x_start: int, x_end: int, attr: int) -> None:
     for y in range(y_start, y_end):
@@ -27,14 +23,16 @@ def draw_guess_squares(stdscr: curses.window, square_idx: int, guess_squares: li
     for i, sq in enumerate(guess_squares):
         attr = palette.to_curses_pair(sq)
         border_attr = curses.color_pair(7) if i == square_idx else curses.A_NORMAL
+
         stdscr.attron(border_attr)
         rectangle(stdscr, y_pos, x_pos, y_pos + square_height, x_pos + square_width)
         stdscr.attroff(border_attr)
+
         _fill_rectangle(stdscr, y_pos + 1, y_pos + square_height, x_pos + 1, square_width - 1, attr)
         x_pos += square_width + 1
 
 
-def draw_guessed_squares(stdscr: curses.window, guessed_squares: list[list[Color]], guessed_feedback: list[tuple[int, int]]) -> None:
+def draw_guessed_squares(stdscr: curses.window, guessed_squares: list[list[Color]], guessed_feedback: list[Feedback]) -> None:
     if len(guessed_squares) == 0:
         return
 
@@ -45,11 +43,11 @@ def draw_guessed_squares(stdscr: curses.window, guessed_squares: list[list[Color
 
     for idx, guess in enumerate(guessed_squares):
         x_pos = x_start
-        stdscr.addstr(y_pos, x_pos - 5, f"{guessed_feedback[idx][0]}")
+        stdscr.addstr(y_pos, x_pos - 5, f"{guessed_feedback[idx].black}")
         for sq in guess:
             attr = palette.to_curses_pair(sq)
             rectangle(stdscr, y_pos, x_pos, y_pos + square_height, x_pos + square_width)
             _fill_rectangle(stdscr, y_pos + 1, y_pos + square_height, x_pos + 1, square_width - 1, attr)
             x_pos += square_width + 1
-        stdscr.addstr(y_pos, x_pos + 5, f"{guessed_feedback[idx][1]}")
+        stdscr.addstr(y_pos, x_pos + 5, f"{guessed_feedback[idx].white}")
         y_pos += square_height + 1
