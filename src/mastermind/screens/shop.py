@@ -33,7 +33,8 @@ class ShopScreen(Screen):
 
     @override
     def handle_input(self, event: InputEvent) -> None:
-        extra_guess_idx = len(self._offer)
+        owned_count = len(self._run_state.relics)
+        extra_guess_idx = owned_count + len(self._offer)
         leave_idx = extra_guess_idx + 1
 
         if  event == InputEvent.LEFT:
@@ -41,7 +42,9 @@ class ShopScreen(Screen):
         if  event == InputEvent.RIGHT:
             self._current = (self._current + 1) % (leave_idx + 1)
         if event == InputEvent.CONFIRM:
-            if self._current < extra_guess_idx:
+            if self._current < owned_count:
+                self._sell_relic()
+            elif self._current < extra_guess_idx:
                 self._buy_relic()
             elif self._current == extra_guess_idx:
                 self._buy_extra_guess()
@@ -57,17 +60,33 @@ class ShopScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render_shop(self._run_state.currency, self._offer, _EXTRA_GUESS_PRICE, self._current)
+        self._renderer.render_shop(
+            self._run_state.currency,
+            self._offer,
+            _EXTRA_GUESS_PRICE,
+            self._current,
+            self._run_state.relics,
+            self._run_state.max_relics,
+        )
 
 
     def _buy_relic(self) -> None:
-        relic = self._offer[self._current]
+        offer_idx = self._current - len(self._run_state.relics)
+        relic = self._offer[offer_idx]
         if self._run_state.currency < relic.price:
             return
 
+        if not self._run_state.add_relic(relic):
+            return
         self._run_state.spend(relic.price)
-        self._run_state.add_relic(relic)
-        del self._offer[self._current]
+        del self._offer[offer_idx]
+
+
+    def _sell_relic(self) -> None:
+        relic = self._run_state.relics[self._current]
+        if not self._run_state.sell_relic(relic):
+            return
+        self._run_state.spend(-(relic.price // 2))
 
 
     def _buy_extra_guess(self) -> None:

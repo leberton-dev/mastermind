@@ -14,6 +14,7 @@ class RunState:
     def __init__(self) -> None:
         self._ante: int = 1
         self._relics: list[Relic] = []
+        self._max_relics: int = 5
         self._currency: int = 0
         self._blind_idx: int = 0
 
@@ -33,6 +34,10 @@ class RunState:
     @property
     def blind(self) -> Blind:
         return self._BLIND_ORDER[self._blind_idx]
+
+    @property
+    def max_relics(self) -> int:
+        return self._max_relics
 
 
     def advance_blind(self) -> None:
@@ -57,5 +62,15 @@ class RunState:
         self._currency -= amount
 
 
-    def add_relic(self, relic: Relic) -> None:
+    def add_relic(self, relic: Relic) -> bool:
+        if len(self._relics) >= self._max_relics:
+            return False
         self._relics.append(relic)
+        return True
+
+
+    def sell_relic(self, relic: Relic) -> bool:
+        if len(self._relics) == 0:
+            return False
+        self._relics.remove(relic)
+        return True

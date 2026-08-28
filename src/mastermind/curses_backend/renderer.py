@@ -156,7 +156,7 @@ class CursesRenderer:
             y += 1
 
 
-    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int) -> None:
+    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int, owned_relics: list[Relic], max_relics: int) -> None:
         self._stdscr.clear()
         rectangle(self._stdscr, 0, 0, curses.LINES - 2, curses.COLS - 2)
 
@@ -164,19 +164,51 @@ class CursesRenderer:
         self._stdscr.addstr(1, (curses.COLS - len(title)) // 2, title, curses.A_BOLD | curses.A_STANDOUT)
         self._stdscr.addstr(1, 2, f"$ {currency}")
 
-        items = [(str(relic), relic.description, relic.price) for relic in offer] + [("Extra guess", "Gain an extra guess this blind", extra_guess_price)]
-        self._draw_shop_cards(items, selected)
+        self._draw_relic_slots(owned_relics, max_relics, selected)
 
-        leave_idx = len(items)
+        relics_full = len(owned_relics) >= max_relics
+        items = [(str(relic), relic.description, relic.price) for relic in offer] + [("Extra guess", "Gain an extra guess this blind", extra_guess_price)]
+        self._draw_shop_cards(items, selected - len(owned_relics), len(offer), relics_full)
+
+        leave_idx = len(owned_relics) + len(items)
         leave_str = "[ Leave Shop ]"
         attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
         self._stdscr.addstr(curses.LINES - 4, (curses.COLS - len(leave_str)) // 2, leave_str, attr)
 
-        self._stdscr.addstr(curses.LINES - 3, 2, "LEFT/RIGHT: select   ENTER: buy/leave")
+        self._stdscr.addstr(curses.LINES - 3, 2, "LEFT/RIGHT: select   ENTER: buy/sell/leave")
         self._stdscr.refresh()
 
 
-    def _draw_shop_cards(self, items: list[tuple[str, str, int]], selected: int) -> None:
+    def _draw_relic_slots(self, owned_relics: list[Relic], max_relics: int, selected: int) -> None:
+        slot_width = 16
+        slot_height = 4
+        total_width = slot_width * max_relics + (max_relics - 1)
+        x_start = (curses.COLS - total_width) // 2
+        y_pos = 3
+
+        x = x_start
+        for i in range(max_relics):
+            filled = i < len(owned_relics)
+            if filled:
+                border_attr = curses.color_pair(7) if i == selected else curses.A_NORMAL
+            else:
+                border_attr = curses.A_DIM
+
+            self._stdscr.attron(border_attr)
+            rectangle(self._stdscr, y_pos, x, y_pos + slot_height, x + slot_width)
+            self._stdscr.attroff(border_attr)
+
+            if filled:
+                label_lines = textwrap.wrap(str(owned_relics[i]), slot_width - 2)[:slot_height - 2]
+                label_y = y_pos + 1
+                for line in label_lines:
+                    self._stdscr.addstr(label_y, x + (slot_width - len(line)) // 2, line)
+                    label_y += 1
+
+            x += slot_width + 1
+
+
+    def _draw_shop_cards(self, items: list[tuple[str, str, int]], selected: int, relic_count: int, relics_full: bool) -> None:
         card_width = 25
         card_height = 14
         total_width = card_width * len(items) + (len(items) - 1)
@@ -185,7 +217,9 @@ class CursesRenderer:
 
         x = x_start
         for i, (label, description, cost) in enumerate(items):
+            is_locked = relics_full and i < relic_count
             border_attr = curses.color_pair(7) if i == selected else curses.A_NORMAL
+            text_attr = curses.A_DIM if is_locked else curses.A_NORMAL
 
             self._stdscr.attron(border_attr)
             rectangle(self._stdscr, y_pos, x, y_pos + card_height, x + card_width)
@@ -194,16 +228,16 @@ class CursesRenderer:
             name_lines = textwrap.wrap(label, card_width - 2)
             name_y = y_pos + 1
             for line in name_lines:
-                self._stdscr.addstr(name_y, x + (card_width - len(line)) // 2, line)
+                self._stdscr.addstr(name_y, x + (card_width - len(line)) // 2, line, text_attr)
                 name_y += 1
 
             desc_lines = textwrap.wrap(description, card_width -2)[:card_height - 4 - len(name_lines)]
             desc_y = name_y + 1
             for line in desc_lines:
-                self._stdscr.addstr(desc_y, x + (card_width - len(line)) // 2 + 1, line)
+                self._stdscr.addstr(desc_y, x + (card_width - len(line)) // 2 + 1, line, text_attr)
                 desc_y += 1
 
-            price_str = f"${cost}"
-            self._stdscr.addstr(y_pos + card_height - 2, x + (card_width - len(price_str)) // 2, price_str)
+            price_str = "LOCKED" if is_locked else f"${cost}"
+            self._stdscr.addstr(y_pos + card_height - 2, x + (card_width - len(price_str)) // 2, price_str, text_attr)
 
             x += card_width + 1
