@@ -6,6 +6,7 @@ from mastermind.core.currency import reward_for
 class RunState:
     _BASE_TARGET_SCORE: int = 5
     _BASE_MAX_TURNS: int = 10
+    _TARGET_SCORE_GROWTH: float = 2.0
 
 
     def __init__(self) -> None:
@@ -37,7 +38,8 @@ class RunState:
 
 
     def new_round(self) -> GameState:
-        return GameState(self._BASE_MAX_TURNS, self._BASE_TARGET_SCORE, self._relics)
+        target = round(self._BASE_TARGET_SCORE * self._TARGET_SCORE_GROWTH ** (self._ante - 1))
+        return GameState(self._BASE_MAX_TURNS, target, self._relics)
 
     
     def spend(self, amount: int) -> None:
