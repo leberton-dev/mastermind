@@ -1,24 +1,29 @@
 from typing import override
 
 from mastermind.core.gamestate import GameState
+from mastermind.core.run import RunState
 from mastermind.engine.input_event import InputEvent
 from mastermind.engine.renderer import Renderer
 from mastermind.engine.screen import Screen
 from mastermind.engine.screen_queue import ScreenQueue
 from mastermind.engine.transition import ScreenTransition
+from mastermind.screens.shop import ShopScreen
 
 
 class GameOverScreen(Screen):
-    def __init__(self, queue: ScreenQueue, renderer: Renderer, state: GameState) -> None:
+    def __init__(self, queue: ScreenQueue, renderer: Renderer, state: GameState, run_state: RunState) -> None:
         super().__init__(queue, False)
         self._renderer: Renderer = renderer
         self._state: GameState = state
+        self._run_state: RunState = run_state
 
 
     @override
     def handle_input(self, event: InputEvent) -> None:
         self._queue.push(ScreenTransition.pop())
-        if not self._state.won:
+        if self._state.won:
+            self._queue.push(ScreenTransition.push(ShopScreen(self._queue, self._renderer, self._run_state)))
+        else:
             self._queue.push(ScreenTransition.pop())
 
 

@@ -139,3 +139,23 @@ class CursesRenderer:
         y = 0
         for relic in relics:
             self._stdscr.addstr(y, x, str(relic))
+            y += 1
+
+
+    def render_shop(self, currency: int, offer: list[Relic], price: int, selected: int) -> None:
+        self._stdscr.clear()
+        self._stdscr.addstr(1, (curses.COLS - len("SHOP")) // 2, "SHOP", curses.A_STANDOUT)
+        self._stdscr.addstr(3, 1, f"Currency: {currency}")
+
+        y = 5
+        for i, relic in enumerate(offer):
+            attr = curses.A_STANDOUT if i == selected else curses.A_NORMAL
+            self._stdscr.addstr(y, 1, f"{str(relic)} - {price}", attr)
+            y += 1
+
+        leave_idx = len(offer)
+        attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
+        self._stdscr.addstr(y + 1, 1, "Leave Shop", attr)
+
+        self._stdscr.addstr(curses.LINES - 1, 1, "UP/DOWN: select   ENTER: buy/leave")
+        self._stdscr.refresh()

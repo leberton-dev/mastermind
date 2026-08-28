@@ -18,6 +18,9 @@ class RunState:
     def ante(self) -> int:
         return self._ante
 
+    @property
+    def currency(self) -> int:
+        return self._currency
 
     @property
     def relics(self) -> list[Relic]:
@@ -36,3 +39,10 @@ class RunState:
     def new_round(self) -> GameState:
         return GameState(self._BASE_MAX_TURNS, self._BASE_TARGET_SCORE, self._relics)
 
+    
+    def spend(self, amount: int) -> None:
+        self._currency -= amount
+
+
+    def add_relic(self, relic: Relic) -> None:
+        self._relics.append(relic)

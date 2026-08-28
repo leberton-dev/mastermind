@@ -8,6 +8,7 @@ from mastermind.engine.screen import Screen
 from mastermind.engine.screen_queue import ScreenQueue
 from mastermind.engine.transition import ScreenTransition
 from mastermind.screens.game_over import GameOverScreen
+from mastermind.screens.shop import ShopScreen
 
 
 class GameplayScreen(Screen):
@@ -64,14 +65,14 @@ class GameplayScreen(Screen):
 
         if self._state.game_over:
             if self._state.won:
-                game_over = GameOverScreen(self._queue, self._renderer, self._state)
+                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state)
                 self._queue.push(ScreenTransition.push(game_over))
                 self._run_state.reward_round(self._state)
                 self._run_state.advance_ante()
                 self._state = self._run_state.new_round()
 
             if self._state.lost:
-                game_over = GameOverScreen(self._queue, self._renderer, self._state)
+                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state)
                 self._queue.push(ScreenTransition.push(game_over))
 
         self._state.reset_current_guess()
