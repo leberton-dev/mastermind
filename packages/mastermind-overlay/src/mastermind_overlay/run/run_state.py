@@ -1,9 +1,13 @@
+import random
+
 from mastermind_overlay.economy.currency import reward_for
 from mastermind_overlay.events.bus import EventBus
 from mastermind_overlay.events.catalog.round_started import RoundStarted
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
 from mastermind_overlay.run.round_tier import RoundTier
+from mastermind_overlay.boss_mutators.catalog import BOSS_MUTATORS
+from mastermind_overlay.boss_mutators.mutator import BossMutator
 
 
 class RunState:
@@ -62,8 +66,13 @@ class RunState:
     def new_round(self) -> GameState:
         stage_base = self._BASE_TARGET_SCORE * self._TARGET_SCORE_GROWTH ** (self._stage - 1)
         target = round(stage_base * self.tier.multiplier)
+        mutator: BossMutator | None = self._pick_mutator() if self.tier.is_final else None
         self._events.publish(RoundStarted(self.tier))
-        return GameState(self._BASE_MAX_TURNS, target, self._relics)
+        return GameState(self._BASE_MAX_TURNS, target, self._relics, mutator)
+
+
+    def _pick_mutator(self) -> BossMutator:
+        return random.choice(BOSS_MUTATORS)()
 
 
     def spend(self, amount: int) -> None:

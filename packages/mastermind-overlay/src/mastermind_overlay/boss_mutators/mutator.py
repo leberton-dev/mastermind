@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from mastermind_kernel.colors import PegColor
 from mastermind_kernel.feedback import CodeFeedback
 
-from mastermind_overlay.run.gamestate import GameState
+if TYPE_CHECKING:
+    from mastermind_overlay.run.gamestate import GameState
 
 
 class BossMutator(ABC):
