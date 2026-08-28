@@ -73,6 +73,10 @@ class GameState:
         self._current_turn += 1
 
 
+    def add_turn(self) -> None:
+        self._max_turns += 1
+
+
     def cycle_color(self, direction: int) -> None:
         self._current_code.cycle(self._current_peg, direction)
 
@@ -93,4 +97,5 @@ class GameState:
         self._secret_code = Code.random()
         self._guessed_codes = []
         self._guessed_feedback = []
+
 

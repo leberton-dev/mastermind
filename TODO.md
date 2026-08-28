@@ -13,7 +13,7 @@
 
 ### Economy / shop
 - [x] currency earned at the end of a round (turns saved, score margin...)
-- [ ] shop screen between antes
+- [x] shop screen between antes
 - [ ] purchases: relics, extra guess, hint, color reroll
 
 ### Enhanced pegs (deckbuilding)

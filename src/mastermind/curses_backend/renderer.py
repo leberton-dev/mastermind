@@ -142,7 +142,7 @@ class CursesRenderer:
             y += 1
 
 
-    def render_shop(self, currency: int, offer: list[Relic], price: int, selected: int) -> None:
+    def render_shop(self, currency: int, offer: list[Relic], price: int, extra_guess_price: int, selected: int) -> None:
         self._stdscr.clear()
         self._stdscr.addstr(1, (curses.COLS - len("SHOP")) // 2, "SHOP", curses.A_STANDOUT)
         self._stdscr.addstr(3, 1, f"Currency: {currency}")
@@ -153,7 +153,12 @@ class CursesRenderer:
             self._stdscr.addstr(y, 1, f"{str(relic)} - {price}", attr)
             y += 1
 
-        leave_idx = len(offer)
+        extra_guess_idx = len(offer)
+        attr = curses.A_STANDOUT if selected == extra_guess_idx else curses.A_NORMAL
+        self._stdscr.addstr(y + 1, 1, f"Extra guess - {extra_guess_price}", attr)
+        y += 1
+
+        leave_idx = extra_guess_idx + 1
         attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
         self._stdscr.addstr(y + 1, 1, "Leave Shop", attr)
 

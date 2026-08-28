@@ -65,14 +65,17 @@ class GameplayScreen(Screen):
 
         if self._state.game_over:
             if self._state.won:
-                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state)
-                self._queue.push(ScreenTransition.push(game_over))
                 self._run_state.reward_round(self._state)
                 self._run_state.advance_ante()
-                self._state = self._run_state.new_round()
+                next_round = self._run_state.new_round()
+
+                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state, next_round)
+                self._queue.push(ScreenTransition.push(game_over))
+
+                self._state = next_round
 
             if self._state.lost:
-                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state)
+                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state, None)
                 self._queue.push(ScreenTransition.push(game_over))
 
         self._state.reset_current_guess()
