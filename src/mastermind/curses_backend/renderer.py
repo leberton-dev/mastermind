@@ -1,14 +1,14 @@
 import curses
 from curses.textpad import rectangle
 
-from mastermind.ui import palette
+from mastermind.curses_backend import palette
 from mastermind.core.code import Code
 from mastermind.core.gamestate import GameState
 from mastermind.core.relic import Relic
-
 from mastermind.core.feedback import CodeFeedback
 
-class Renderer:
+
+class CursesRenderer:
     _BOTTOM_PADDING: int = 1
     _WIN_STR: str = "You won, let's go to the next round."
     _LOOSE_STR: str = "You lost, you must restart haha..."
@@ -18,7 +18,24 @@ class Renderer:
         self._stdscr: curses.window = stdscr
 
 
-    def render(self, state: GameState, ante: int, relics: list[Relic]) -> None:
+    def dimensions(self) -> tuple[int, int]:
+        return curses.LINES, curses.COLS
+
+
+    def clear(self) -> None:
+        self._stdscr.clear()
+
+
+    def refresh(self) -> None:
+        self._stdscr.refresh()
+
+
+    def draw_text(self, y: int, x: int, text: str, highlighted: bool = False) -> None:
+        attr = curses.A_STANDOUT if highlighted else curses.A_NORMAL
+        self._stdscr.addstr(y, x, text, attr)
+
+
+    def render_gameplay(self, state: GameState, ante: int, relics: list[Relic]) -> None:
         self._stdscr.clear()
         self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
@@ -34,7 +51,7 @@ class Renderer:
         self._stdscr.addstr(curses.LINES-2, 1, "TOP/DOWN: cycle trough colors")
         self._stdscr.addstr(curses.LINES-1, 1, "ENTER: submit colors")
 
-    def win(self, correct_guess_str: str) -> None:
+    def render_win(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(
             curses.LINES // 2,
             (curses.COLS + len(self._WIN_STR)) // 2,
@@ -46,7 +63,7 @@ class Renderer:
             correct_guess_str,
             curses.A_STANDOUT)
 
-    def loose(self, correct_guess_str: str) -> None:
+    def render_loose(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(
             curses.LINES // 2,
             (curses.COLS - len(self._LOOSE_STR)) // 2,
@@ -112,7 +129,7 @@ class Renderer:
         max_len = max(len(s) for s in strs)
         x = curses.COLS - max_len - 1
         y = 1
-        
+
         for s in strs:
             self._stdscr.addstr(y, x, s)
             y += 1

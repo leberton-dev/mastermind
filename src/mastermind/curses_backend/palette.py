@@ -23,4 +23,3 @@ def to_curses_pair(color: PegColor) -> int:
             PegColor.PURPLE: curses.color_pair(6)
     }
     return color_to_curses[color]
-

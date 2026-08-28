@@ -1,0 +1,26 @@
+from abc import ABC, abstractmethod
+
+from mastermind.engine.input_event import InputEvent
+from mastermind.engine.screen_queue import ScreenQueue
+
+
+class Screen(ABC):
+    def __init__(self, queue: ScreenQueue, opaque: bool = True) -> None:
+        self._queue: ScreenQueue = queue
+        self._opaque: bool = opaque
+
+
+    @property
+    def opaque(self) -> bool:
+        return self._opaque
+
+
+    @abstractmethod
+    def handle_input(self, event: InputEvent) -> None: ...
+    @abstractmethod
+    def update(self) -> None: ...
+    @abstractmethod
+    def render(self) -> None: ...
+
+    def on_enter(self) -> None: ...
+    def on_exit(self) -> None: ...

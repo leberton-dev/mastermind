@@ -1,34 +1,36 @@
-import curses
 from typing import override
 
-from mastermind.core.screen_manager import Screen, ScreenQueue, ScreenTransition
 from mastermind.core.gamestate import GameState
-from mastermind.screens.game_over import GameOverScreen
-from mastermind.ui.renderer import Renderer
 from mastermind.core.run import RunState
+from mastermind.engine.input_event import InputEvent
+from mastermind.engine.renderer import Renderer
+from mastermind.engine.screen import Screen
+from mastermind.engine.screen_queue import ScreenQueue
+from mastermind.engine.transition import ScreenTransition
+from mastermind.screens.game_over import GameOverScreen
 
 
 class GameplayScreen(Screen):
-    def __init__(self, stdscr: curses.window, queue: ScreenQueue, run_state: RunState) -> None:
-        super().__init__(stdscr, queue, True)
+    def __init__(self, queue: ScreenQueue, renderer: Renderer, run_state: RunState) -> None:
+        super().__init__(queue, True)
         self._state: GameState = run_state.new_round()
-        self._renderer: Renderer = Renderer(stdscr)
+        self._renderer: Renderer = renderer
         self._run_state: RunState = run_state
 
 
     @override
-    def handle_input(self, key: int) -> None:
-        if key == curses.KEY_UP:
+    def handle_input(self, event: InputEvent) -> None:
+        if event == InputEvent.UP:
             self._cycle_color_up()
-        if key == curses.KEY_DOWN:
+        if event == InputEvent.DOWN:
             self._cycle_color_down()
-        if key == curses.KEY_LEFT:
+        if event == InputEvent.LEFT:
             self._move_left()
-        if key == curses.KEY_RIGHT:
+        if event == InputEvent.RIGHT:
             self._move_right()
-        if key == curses.KEY_ENTER or key == ord('\n') or key == ord('\r'):
+        if event == InputEvent.CONFIRM:
             self._submit_guess()
-        if key == ord('q'):
+        if event == InputEvent.QUIT:
             self._quit()
 
 
@@ -39,7 +41,7 @@ class GameplayScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render(self._state, self._run_state.ante, self._run_state.relics)
+        self._renderer.render_gameplay(self._state, self._run_state.ante, self._run_state.relics)
 
 
     def _cycle_color_up(self) -> None:
@@ -62,15 +64,14 @@ class GameplayScreen(Screen):
 
         if self._state.game_over:
             if self._state.won:
-                game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
+                game_over = GameOverScreen(self._queue, self._renderer, self._state)
                 self._queue.push(ScreenTransition.push(game_over))
                 self._run_state.reward_round(self._state)
                 self._run_state.advance_ante()
                 self._state = self._run_state.new_round()
 
             if self._state.lost:
-                game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
+                game_over = GameOverScreen(self._queue, self._renderer, self._state)
                 self._queue.push(ScreenTransition.push(game_over))
 
         self._state.reset_current_guess()
-

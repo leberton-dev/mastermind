@@ -1,8 +1,11 @@
 import curses
 from curses import wrapper
 
-from mastermind import ui
-from mastermind.core.screen_manager import ScreenQueue, ScreenStack
+from mastermind.curses_backend import palette
+from mastermind.curses_backend.input_source import CursesInputSource
+from mastermind.curses_backend.renderer import CursesRenderer
+from mastermind.engine.screen_queue import ScreenQueue
+from mastermind.engine.screen_stack import ScreenStack
 from mastermind.screens.menu import MenuScreen
 
 
@@ -15,15 +18,17 @@ def _init_curses(stdscr: curses.window) -> None:
     curses.start_color()
     if not curses.has_colors():
         raise Exception("Terminal does not have colors")
-    ui.palette.init_color_pairs()
+    palette.init_color_pairs()
 
 
 def main(stdscr: curses.window):
     _init_curses(stdscr)
-    
+
+    renderer: CursesRenderer = CursesRenderer(stdscr)
+    input_source: CursesInputSource = CursesInputSource(stdscr)
     queue: ScreenQueue = ScreenQueue()
-    menu: MenuScreen = MenuScreen(stdscr, queue)
-    stack: ScreenStack = ScreenStack(stdscr, queue, menu)
+    menu: MenuScreen = MenuScreen(queue, renderer)
+    stack: ScreenStack = ScreenStack(input_source, queue, menu)
 
     while stack.step():
         pass
