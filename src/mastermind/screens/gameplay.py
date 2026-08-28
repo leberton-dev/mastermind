@@ -8,7 +8,6 @@ from mastermind.engine.screen import Screen
 from mastermind.engine.screen_queue import ScreenQueue
 from mastermind.engine.transition import ScreenTransition
 from mastermind.screens.game_over import GameOverScreen
-from mastermind.screens.shop import ShopScreen
 
 
 class GameplayScreen(Screen):

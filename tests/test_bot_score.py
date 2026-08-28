@@ -1,8 +1,7 @@
 import pytest
 
+from mastermind import bot
 from mastermind.core.colors import PegColor
-
-import mastermind.bot as bot
 
 
 def test_feedback_identical_sequences_all_exact():

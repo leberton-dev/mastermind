@@ -2,12 +2,6 @@ import random
 from typing import override
 
 from mastermind.core.gamestate import GameState
-from mastermind.core.run import RunState
-from mastermind.engine.input_event import InputEvent
-from mastermind.engine.renderer import Renderer
-from mastermind.engine.screen import Screen
-from mastermind.engine.screen_queue import ScreenQueue
-from mastermind.engine.transition import ScreenTransition
 from mastermind.core.relic import (
     ChipPerBlackPegRelic,
     ChipPerWhitePegRelic,
@@ -15,6 +9,12 @@ from mastermind.core.relic import (
     MultPlusOneRelic,
     Relic,
 )
+from mastermind.core.run import RunState
+from mastermind.engine.input_event import InputEvent
+from mastermind.engine.renderer import Renderer
+from mastermind.engine.screen import Screen
+from mastermind.engine.screen_queue import ScreenQueue
+from mastermind.engine.transition import ScreenTransition
 
 _RELIC_PRICE: int = 10
 _OFFER_SIZE: int = 3

@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class PegColor(Enum):
     WHITE = 1
     ORANGE = 2

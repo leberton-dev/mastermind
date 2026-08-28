@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import NamedTuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:
     from mastermind.engine.screen import Screen
@@ -15,19 +15,19 @@ class TransitionKind(Enum):
 
 class ScreenTransition(NamedTuple):
     kind: TransitionKind
-    screen: "Screen | None" = None
+    screen: Screen | None = None
 
 
     @classmethod
-    def push(cls, screen: "Screen") -> "ScreenTransition":
+    def push(cls, screen: Screen) -> ScreenTransition:
         return cls(TransitionKind.PUSH, screen)
 
 
     @classmethod
-    def pop(cls) -> "ScreenTransition":
+    def pop(cls) -> ScreenTransition:
         return cls(TransitionKind.POP)
 
 
     @classmethod
-    def quit(cls) -> "ScreenTransition":
+    def quit(cls) -> ScreenTransition:
         return cls(TransitionKind.QUIT)

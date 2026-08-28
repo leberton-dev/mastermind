@@ -1,7 +1,8 @@
-from mastermind.core.feedback import CodeFeedback
 from mastermind.core.code import Code
-from mastermind.core.scoring import compute_chips, apply_mult, Chip
+from mastermind.core.feedback import CodeFeedback
 from mastermind.core.relic import Relic
+from mastermind.core.scoring import Chip, apply_mult, compute_chips
+
 
 class GameState:
     def __init__(self, max_turns: int, target_score: int, relics: list[Relic]) -> None:

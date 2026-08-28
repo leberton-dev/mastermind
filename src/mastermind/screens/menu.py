@@ -62,10 +62,6 @@ class MenuScreen(Screen):
         for _ in self._PLAY_STR.strip("\n").splitlines():
             height_play += 1
 
-        height_quit = 0
-        for _ in self._QUIT_STR.strip("\n").splitlines():
-            height_quit += 1
-
         start_y = (lines // 2) - height_play - 1
         self._render_big_str(start_y, self._PLAY_STR, self._current == 0)
         start_y += height_play + 1

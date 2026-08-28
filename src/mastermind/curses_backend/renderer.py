@@ -1,11 +1,11 @@
 import curses
 from curses.textpad import rectangle
 
-from mastermind.curses_backend import palette
 from mastermind.core.code import Code
+from mastermind.core.feedback import CodeFeedback
 from mastermind.core.gamestate import GameState
 from mastermind.core.relic import Relic
-from mastermind.core.feedback import CodeFeedback
+from mastermind.curses_backend import palette
 
 
 class CursesRenderer:
@@ -137,10 +137,8 @@ class CursesRenderer:
 
     def _render_relics(self, relics: list[Relic]) -> None:
         x = 0
-        y = 0
-        for relic in relics:
+        for y, relic in enumerate(relics):
             self._stdscr.addstr(y, x, str(relic))
-            y += 1
 
 
     def render_shop(self, currency: int, offer: list[Relic], price: int, extra_guess_price: int, selected: int) -> None:
@@ -151,7 +149,7 @@ class CursesRenderer:
         y = 5
         for i, relic in enumerate(offer):
             attr = curses.A_STANDOUT if i == selected else curses.A_NORMAL
-            self._stdscr.addstr(y, 1, f"{str(relic)} - {price}", attr)
+            self._stdscr.addstr(y, 1, f"{relic!s} - {price}", attr)
             y += 1
 
         extra_guess_idx = len(offer)

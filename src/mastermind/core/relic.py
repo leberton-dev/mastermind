@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import override
 
-from mastermind.core.scoring import Chip
 from mastermind.core.feedback import CodeFeedback
-
+from mastermind.core.scoring import Chip
 
 
 class Relic(ABC):

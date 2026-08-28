@@ -1,7 +1,7 @@
+from mastermind.core.blind import Blind
+from mastermind.core.currency import reward_for
 from mastermind.core.gamestate import GameState
 from mastermind.core.relic import Relic
-from mastermind.core.currency import reward_for
-from mastermind.core.blind import Blind
 
 
 class RunState:
