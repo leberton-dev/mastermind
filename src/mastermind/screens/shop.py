@@ -35,7 +35,7 @@ def generate_offer(owned: list[Relic]) -> list[Relic]:
 
 class ShopScreen(Screen):
     def __init__(self, queue: ScreenQueue, renderer: Renderer, run_state: RunState, next_state: GameState) -> None:
-        super().__init__(queue, False)
+        super().__init__(queue, True)
         self._renderer: Renderer = renderer
         self._run_state: RunState = run_state
         self._next_state: GameState = next_state

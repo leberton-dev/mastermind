@@ -1,4 +1,5 @@
 import curses
+import textwrap
 from curses.textpad import rectangle
 
 from mastermind.core.code import Code
@@ -157,23 +158,46 @@ class CursesRenderer:
 
     def render_shop(self, currency: int, offer: list[Relic], price: int, extra_guess_price: int, selected: int) -> None:
         self._stdscr.clear()
-        self._stdscr.addstr(1, (curses.COLS - len("SHOP")) // 2, "SHOP", curses.A_STANDOUT)
-        self._stdscr.addstr(3, 1, f"Currency: {currency}")
+        rectangle(self._stdscr, 0, 0, curses.LINES - 2, curses.COLS - 2)
 
-        y = 5
-        for i, relic in enumerate(offer):
-            attr = curses.A_STANDOUT if i == selected else curses.A_NORMAL
-            self._stdscr.addstr(y, 1, f"{relic!s} - {price}", attr)
-            y += 1
+        title = "SHOP"
+        self._stdscr.addstr(1, (curses.COLS - len(title)) // 2, title, curses.A_BOLD | curses.A_STANDOUT)
+        self._stdscr.addstr(1, 2, f"$ {currency}")
 
-        extra_guess_idx = len(offer)
-        attr = curses.A_STANDOUT if selected == extra_guess_idx else curses.A_NORMAL
-        self._stdscr.addstr(y + 1, 1, f"Extra guess - {extra_guess_price}", attr)
-        y += 1
+        items = [(str(relic), price) for relic in offer] + [("Extra guess", extra_guess_price)]
+        self._draw_shop_cards(items, selected)
 
-        leave_idx = extra_guess_idx + 1
+        leave_idx = len(items)
+        leave_str = "[ Leave Shop ]"
         attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
-        self._stdscr.addstr(y + 1, 1, "Leave Shop", attr)
+        self._stdscr.addstr(curses.LINES - 4, (curses.COLS - len(leave_str)) // 2, leave_str, attr)
 
-        self._stdscr.addstr(curses.LINES - 1, 1, "UP/DOWN: select   ENTER: buy/leave")
+        self._stdscr.addstr(curses.LINES - 3, 2, "LEFT/RIGHT: select   ENTER: buy/leave")
         self._stdscr.refresh()
+
+
+    def _draw_shop_cards(self, items: list[tuple[str, int]], selected: int) -> None:
+        card_width = 25
+        card_height = 14
+        total_width = card_width * len(items) + (len(items) - 1)
+        x_start = (curses.COLS - total_width) // 2
+        y_pos = curses.LINES // 2 - card_height // 2
+
+        x = x_start
+        for i, (label, cost) in enumerate(items):
+            border_attr = curses.color_pair(7) if i == selected else curses.A_NORMAL
+
+            self._stdscr.attron(border_attr)
+            rectangle(self._stdscr, y_pos, x, y_pos + card_height, x + card_width)
+            self._stdscr.attroff(border_attr)
+
+            name_lines = textwrap.wrap(label, card_width - 2)[:card_height - 3]
+            name_y = y_pos + (card_height - 2 - len(name_lines)) // 2
+            for line in name_lines:
+                self._stdscr.addstr(name_y, x + (card_width - len(line)) // 2, line)
+                name_y += 1
+
+            price_str = f"${cost}"
+            self._stdscr.addstr(y_pos + card_height - 2, x + (card_width - len(price_str)) // 2, price_str)
+
+            x += card_width + 1
