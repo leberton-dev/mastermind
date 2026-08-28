@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Mastermind in python"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["mastermind-kernel"]
+dependencies = [
+    "mastermind-kernel",
+    "mastermind-overlay",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -15,6 +18,7 @@ packages = ["src/mastermind"]
 
 [dependency-groups]
 dev = [
+	"pyright>=1.1.411",
 	"pytest>=8.0",
 	"ruff>=0.6",
 ]
@@ -30,3 +34,4 @@ members = ["packages/*"]
 
 [tool.uv.sources]
 mastermind-kernel = { workspace = true }
+mastermind-overlay = { workspace = true }

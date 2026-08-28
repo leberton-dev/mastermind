@@ -1,8 +1,8 @@
 from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
 
-from mastermind.core.relic import Relic
-from mastermind.core.scoring import Points, apply_multiplier, compute_points
+from mastermind_overlay.relics.relic import Relic
+from mastermind_overlay.scoring.points import Points, apply_multiplier, compute_points
 
 
 class GameState:

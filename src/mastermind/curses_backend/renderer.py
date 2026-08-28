@@ -4,9 +4,9 @@ from curses.textpad import rectangle
 
 from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
+from mastermind_overlay.relics.relic import Relic
+from mastermind_overlay.run.gamestate import GameState
 
-from mastermind.core.gamestate import GameState
-from mastermind.core.relic import Relic
 from mastermind.curses_backend import palette
 
 

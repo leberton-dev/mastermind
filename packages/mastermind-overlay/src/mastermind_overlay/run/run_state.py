@@ -1,7 +1,7 @@
-from mastermind.core.round_tier import RoundTier
-from mastermind.core.currency import reward_for
-from mastermind.core.gamestate import GameState
-from mastermind.core.relic import Relic
+from mastermind_overlay.economy.currency import reward_for
+from mastermind_overlay.relics.relic import Relic
+from mastermind_overlay.run.gamestate import GameState
+from mastermind_overlay.run.round_tier import RoundTier
 
 
 class RunState:

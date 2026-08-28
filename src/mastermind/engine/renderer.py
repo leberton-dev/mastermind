@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from mastermind.core.gamestate import GameState
-from mastermind.core.relic import Relic
+from mastermind_overlay.relics.relic import Relic
+from mastermind_overlay.run.gamestate import GameState
 
 
 class Renderer(Protocol):

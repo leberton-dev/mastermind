@@ -1,7 +1,8 @@
 from typing import override
 
-from mastermind.core.gamestate import GameState
-from mastermind.core.run import RunState
+from mastermind_overlay.run.gamestate import GameState
+from mastermind_overlay.run.run_state import RunState
+
 from mastermind.engine.input_event import InputEvent
 from mastermind.engine.renderer import Renderer
 from mastermind.engine.screen import Screen
