@@ -1,6 +1,7 @@
 import random
 from typing import override
 
+from mastermind_overlay.events.catalog.shop_entered import ShopEntered
 from mastermind_overlay.relics.catalog import RELICS
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
@@ -30,6 +31,7 @@ class ShopScreen(Screen):
         self._next_state: GameState = next_state
         self._offer: list[Relic] = generate_offer(run_state.relics)
         self._cursor: int = 0
+        run_state.events.publish(ShopEntered())
 
 
     @override
