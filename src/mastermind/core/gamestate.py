@@ -1,11 +1,12 @@
 from mastermind.core.feedback import CodeFeedback
 from mastermind.core.code import Code
-from mastermind.core.scoring import Chip, compute_chips, apply_mult
+from mastermind.core.scoring import compute_chips, apply_mult
 
 class GameState:
-    _MAX_TURNS: int = 10
-
-    def __init__(self) -> None:
+    def __init__(self, max_turns: int, target_score: int) -> None:
+        self._max_turns: int = max_turns
+        self._target_score: int = target_score
+        self._current_turn: int = 0
         self._current_peg: int = 0
         self._current_code: Code = Code.blank()
         self._secret_code: Code = Code.random()
@@ -39,15 +40,23 @@ class GameState:
 
     @property
     def won(self) -> bool:
-        return self._guessed_feedback[-1].won
+        return self._score >= self._target_score
 
     @property
     def lost(self) -> bool:
-        return len(self._guessed_feedback) >= self._MAX_TURNS
+        return len(self._guessed_feedback) >= self._max_turns and not self.won
+
+    @property
+    def turns_left(self) -> int:
+        return self._max_turns - self._current_turn
 
     @property
     def game_over(self) -> bool:
         return self.lost or self.won
+
+    @property
+    def target_score(self) -> int:
+        return self._target_score
 
     def submit_guess(self) -> None:
         self._guessed_codes.append(self._current_code)
@@ -57,6 +66,7 @@ class GameState:
         mult = 1
         chip = compute_chips(feedback)
         self._score += apply_mult(chip, mult)
+        self._current_turn += 1
 
 
     def cycle_color(self, direction: int) -> None:

@@ -16,7 +16,8 @@ class GameOverScreen(Screen):
     @override
     def handle_input(self, key: int) -> None:
         self._queue.push(ScreenTransition.pop())
-        self._queue.push(ScreenTransition.pop())
+        if not self._state.won:
+            self._queue.push(ScreenTransition.pop())
 
 
     @override

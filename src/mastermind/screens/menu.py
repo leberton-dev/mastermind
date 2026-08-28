@@ -3,6 +3,7 @@ import curses
 from typing import override
 
 from mastermind.core.screen_manager import Screen, ScreenQueue, ScreenTransition
+from mastermind.core.run import RunState
 from mastermind.screens.gameplay import GameplayScreen
 
 
@@ -24,6 +25,7 @@ class MenuScreen(Screen):
     def __init__(self, stdscr: curses.window, queue: ScreenQueue) -> None:
         super().__init__(stdscr, queue, True)
         self._current: int = 0
+        self._run_state: RunState = RunState()
 
 
     @override
@@ -32,7 +34,7 @@ class MenuScreen(Screen):
             self._queue.push(ScreenTransition.quit())
         if key == curses.KEY_ENTER or key == ord('\n') or key == ord('\r'):
             if self._current == 0:
-                gameplay_screen = GameplayScreen(self._stdscr, self._queue)
+                gameplay_screen = GameplayScreen(self._stdscr, self._queue, self._run_state)
                 self._queue.push(ScreenTransition.push(gameplay_screen))
             elif self._current == 1:
                 self._queue.push(ScreenTransition.quit())

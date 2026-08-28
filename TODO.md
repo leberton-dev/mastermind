@@ -1,10 +1,10 @@
 ## Make mastermind rogue-like
 ### Run/Score loop
 - [x] instead of single wins/lost a Score that accumulates each try (chips x multiplier)
-- [ ] Progression with rising score
-- [ ] Run state separated from round state (ante counter, builds each round)
-- [ ] HUD showing ante, score, target score, turns left
-- [ ] distinct screens for round cleared vs run over
+- [x] Progression with rising score
+- [x] Run state separated from round state (ante counter, builds each round)
+- [x] HUD showing ante, score, target score, turns left
+- [x] distinct screens for round cleared vs run over
 
 ### Relics / Jokers
 - [ ] passive items that modify the chips/mult calculation

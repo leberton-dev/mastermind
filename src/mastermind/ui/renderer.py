@@ -9,21 +9,21 @@ from mastermind.core.feedback import CodeFeedback
 
 class Renderer:
     _BOTTOM_PADDING: int = 1
-    _WIN_STR: str = "You won"
-    _LOOSE_STR: str = "You lost"
+    _WIN_STR: str = "You won, let's go to the next round."
+    _LOOSE_STR: str = "You lost, you must restart haha..."
 
 
     def __init__(self, stdscr: curses.window) -> None:
         self._stdscr: curses.window = stdscr
 
 
-    def render(self, state: GameState) -> None:
+    def render(self, state: GameState, ante: int) -> None:
         self._stdscr.clear()
         self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
-        self._render_score(state.score)
+        self._render_score_hud(ante, state.score, state.target_score, state.turns_left)
         self._stdscr.refresh()
 
 
@@ -96,9 +96,17 @@ class Renderer:
             y_pos += square_height + 1
 
 
-    def _render_score(self, score: int) -> None:
-        x = curses.COLS - len(str(score)) - 1
-        y = curses.LINES - 1
-
-        self._stdscr.addstr(y, x, str(score))
+    def _render_score_hud(self, ante: int, score: int, target: int, turns_left: int) -> None:
+        ante_str = f"ANTE   : {ante}"
+        score_str = f"SCORE  : {score}"
+        target_str = f"TARGET : {target}"
+        turns_str = f"TURNS  : {turns_left}"
+        strs = [ante_str, score_str, target_str, turns_str]
+        max_len = max(len(s) for s in strs)
+        x = curses.COLS - max_len - 1
+        y = 1
+        
+        for s in strs:
+            self._stdscr.addstr(y, x, s)
+            y += 1
 

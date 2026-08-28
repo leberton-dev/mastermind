@@ -5,13 +5,15 @@ from mastermind.core.screen_manager import Screen, ScreenQueue, ScreenTransition
 from mastermind.core.gamestate import GameState
 from mastermind.screens.game_over import GameOverScreen
 from mastermind.ui.renderer import Renderer
+from mastermind.core.run import RunState
 
 
 class GameplayScreen(Screen):
-    def __init__(self, stdscr: curses.window, queue: ScreenQueue) -> None:
+    def __init__(self, stdscr: curses.window, queue: ScreenQueue, run_state: RunState) -> None:
         super().__init__(stdscr, queue, True)
-        self._state: GameState = GameState()
+        self._state: GameState = run_state.new_round()
         self._renderer: Renderer = Renderer(stdscr)
+        self._run_state: RunState = run_state
 
 
     @override
@@ -37,7 +39,7 @@ class GameplayScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render(self._state)
+        self._renderer.render(self._state, self._run_state.ante)
 
 
     def _cycle_color_up(self) -> None:
@@ -59,8 +61,15 @@ class GameplayScreen(Screen):
         self._state.submit_guess()
 
         if self._state.game_over:
-            game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
-            self._queue.push(ScreenTransition.push(game_over))
+            if self._state.won:
+                game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
+                self._queue.push(ScreenTransition.push(game_over))
+                self._run_state.advance_ante()
+                self._state = self._run_state.new_round()
+
+            if self._state.lost:
+                game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
+                self._queue.push(ScreenTransition.push(game_over))
 
         self._state.reset_current_guess()
 
