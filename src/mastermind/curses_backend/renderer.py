@@ -35,13 +35,13 @@ class CursesRenderer:
         self._stdscr.addstr(y, x, text, attr)
 
 
-    def render_gameplay(self, state: GameState, ante: int, relics: list[Relic]) -> None:
+    def render_gameplay(self, state: GameState, ante: int, blind_label: str, relics: list[Relic]) -> None:
         self._stdscr.clear()
         self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
-        self._render_score_hud(ante, state.score, state.target_score, state.turns_left)
+        self._render_score_hud(ante, state.score, state.target_score, state.turns_left, blind_label)
         self._render_relics(relics)
         self._stdscr.refresh()
 
@@ -120,12 +120,13 @@ class CursesRenderer:
             y_pos += square_height + 1
 
 
-    def _render_score_hud(self, ante: int, score: int, target: int, turns_left: int) -> None:
+    def _render_score_hud(self, ante: int, score: int, target: int, turns_left: int, blind_label: str) -> None:
         ante_str = f"ANTE   : {ante}"
+        blind_str = f"BLIND  : {blind_label}"
         score_str = f"SCORE  : {score}"
         target_str = f"TARGET : {target}"
         turns_str = f"TURNS  : {turns_left}"
-        strs = [ante_str, score_str, target_str, turns_str]
+        strs = [ante_str, blind_str, score_str, target_str, turns_str]
         max_len = max(len(s) for s in strs)
         x = curses.COLS - max_len - 1
         y = 1

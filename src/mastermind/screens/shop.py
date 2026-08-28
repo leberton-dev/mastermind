@@ -83,7 +83,7 @@ class ShopScreen(Screen):
 
 
     def _buy_extra_guess(self) -> None:
-        if self._run_state.currency < _RELIC_PRICE:
+        if self._run_state.currency < _EXTRA_GUESS_PRICE:
             return
 
         self._run_state.spend(_EXTRA_GUESS_PRICE)
