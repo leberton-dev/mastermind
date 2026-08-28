@@ -2,6 +2,7 @@ from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
 
 from mastermind_overlay.relics.relic import Relic
+from mastermind_overlay.scoring.pipeline import ScoringPipeline
 from mastermind_overlay.scoring.points import Points, apply_multiplier, compute_points
 
 
@@ -17,6 +18,7 @@ class GameState:
         self._guessed_feedback: list[CodeFeedback] = []
         self._score: int = 0
         self._relics: list[Relic] = relics
+        self._pipeline: ScoringPipeline = ScoringPipeline(relics)
 
     @property
     def current_peg(self) -> int:
@@ -67,10 +69,7 @@ class GameState:
         feedback: CodeFeedback = self._secret_code.feedback(self._current_code)
         self._guessed_feedback.append(feedback)
 
-        mult: int = 1
-        points: Points = compute_points(feedback)
-        for relic in self._relics:
-            points, mult = relic.on_guess(points, mult, feedback)
+        points, mult = self._pipeline.run(compute_points(feedback), 1, feedback)
         self._score += apply_multiplier(points, mult)
         self._current_turn += 1
 
