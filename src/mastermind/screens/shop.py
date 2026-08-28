@@ -48,9 +48,9 @@ class ShopScreen(Screen):
         extra_guess_idx = len(self._offer)
         leave_idx = extra_guess_idx + 1
 
-        if  event == InputEvent.UP:
+        if  event == InputEvent.LEFT:
             self._current = (self._current - 1) % (leave_idx + 1)
-        if  event == InputEvent.DOWN:
+        if  event == InputEvent.RIGHT:
             self._current = (self._current + 1) % (leave_idx + 1)
         if event == InputEvent.CONFIRM:
             if self._current < extra_guess_idx:
@@ -69,15 +69,15 @@ class ShopScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render_shop(self._run_state.currency, self._offer, _RELIC_PRICE, _EXTRA_GUESS_PRICE, self._current)
+        self._renderer.render_shop(self._run_state.currency, self._offer, _EXTRA_GUESS_PRICE, self._current)
 
 
     def _buy_relic(self) -> None:
-        if self._run_state.currency < _RELIC_PRICE:
+        relic = self._offer[self._current]
+        if self._run_state.currency < relic.price:
             return
 
-        relic = self._offer[self._current]
-        self._run_state.spend(_RELIC_PRICE)
+        self._run_state.spend(relic.price)
         self._run_state.add_relic(relic)
         del self._offer[self._current]
 

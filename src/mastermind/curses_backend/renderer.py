@@ -156,7 +156,7 @@ class CursesRenderer:
             y += 1
 
 
-    def render_shop(self, currency: int, offer: list[Relic], price: int, extra_guess_price: int, selected: int) -> None:
+    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int) -> None:
         self._stdscr.clear()
         rectangle(self._stdscr, 0, 0, curses.LINES - 2, curses.COLS - 2)
 
@@ -164,7 +164,7 @@ class CursesRenderer:
         self._stdscr.addstr(1, (curses.COLS - len(title)) // 2, title, curses.A_BOLD | curses.A_STANDOUT)
         self._stdscr.addstr(1, 2, f"$ {currency}")
 
-        items = [(str(relic), price) for relic in offer] + [("Extra guess", extra_guess_price)]
+        items = [(str(relic), relic.description, relic.price) for relic in offer] + [("Extra guess", "Gain an extra guess this blind", extra_guess_price)]
         self._draw_shop_cards(items, selected)
 
         leave_idx = len(items)
@@ -176,7 +176,7 @@ class CursesRenderer:
         self._stdscr.refresh()
 
 
-    def _draw_shop_cards(self, items: list[tuple[str, int]], selected: int) -> None:
+    def _draw_shop_cards(self, items: list[tuple[str, str, int]], selected: int) -> None:
         card_width = 25
         card_height = 14
         total_width = card_width * len(items) + (len(items) - 1)
@@ -184,18 +184,24 @@ class CursesRenderer:
         y_pos = curses.LINES // 2 - card_height // 2
 
         x = x_start
-        for i, (label, cost) in enumerate(items):
+        for i, (label, description, cost) in enumerate(items):
             border_attr = curses.color_pair(7) if i == selected else curses.A_NORMAL
 
             self._stdscr.attron(border_attr)
             rectangle(self._stdscr, y_pos, x, y_pos + card_height, x + card_width)
             self._stdscr.attroff(border_attr)
 
-            name_lines = textwrap.wrap(label, card_width - 2)[:card_height - 3]
-            name_y = y_pos + (card_height - 2 - len(name_lines)) // 2
+            name_lines = textwrap.wrap(label, card_width - 2)
+            name_y = y_pos + 1
             for line in name_lines:
                 self._stdscr.addstr(name_y, x + (card_width - len(line)) // 2, line)
                 name_y += 1
+
+            desc_lines = textwrap.wrap(description, card_width -2)[:card_height - 4 - len(name_lines)]
+            desc_y = name_y + 1
+            for line in desc_lines:
+                self._stdscr.addstr(desc_y, x + (card_width - len(line)) // 2 + 1, line)
+                desc_y += 1
 
             price_str = f"${cost}"
             self._stdscr.addstr(y_pos + card_height - 2, x + (card_width - len(price_str)) // 2, price_str)
