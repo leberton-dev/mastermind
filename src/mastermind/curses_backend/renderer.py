@@ -12,10 +12,19 @@ class CursesRenderer:
     _BOTTOM_PADDING: int = 1
     _WIN_STR: str = "You won, let's go to the next round."
     _LOOSE_STR: str = "You lost, you must restart haha..."
+    _PANEL_WIDTH: int = 22
 
 
     def __init__(self, stdscr: curses.window) -> None:
         self._stdscr: curses.window = stdscr
+
+
+    def _draw_frame(self) -> None:
+        rectangle(self._stdscr, 0, 0, curses.LINES - 2, curses.COLS - 2)
+        for y in range(1, curses.LINES - 2):
+            self._stdscr.addch(y, self._PANEL_WIDTH, curses.ACS_VLINE)
+        self._stdscr.addch(0, self._PANEL_WIDTH, curses.ACS_TTEE)
+        self._stdscr.addch(curses.LINES - 2, self._PANEL_WIDTH, curses.ACS_BTEE)
 
 
     def dimensions(self) -> tuple[int, int]:
@@ -37,19 +46,17 @@ class CursesRenderer:
 
     def render_gameplay(self, state: GameState, ante: int, blind_label: str, relics: list[Relic]) -> None:
         self._stdscr.clear()
-        self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
+        self._draw_frame()
+        self._render_left_panel(ante, state.score, state.target_score, state.turns_left, blind_label, relics)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
-        self._render_score_hud(ante, state.score, state.target_score, state.turns_left, blind_label)
-        self._render_relics(relics)
         self._stdscr.refresh()
 
 
     def _render_commands(self) -> None:
-        self._stdscr.addstr(curses.LINES-3, 1, "LEFT/RIGHT: switch box")
-        self._stdscr.addstr(curses.LINES-2, 1, "TOP/DOWN: cycle trough colors")
-        self._stdscr.addstr(curses.LINES-1, 1, "ENTER: submit colors")
+        y = curses.LINES - 3
+        self._stdscr.addstr(y, self._PANEL_WIDTH + 2, "LEFT/RIGHT: box    UP/DOWN: color    ENTER: submit")
 
     def render_win(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(
@@ -84,8 +91,9 @@ class CursesRenderer:
     def _draw_guess_squares(self, square_idx: int, guess_squares: Code) -> None:
         square_width = 7
         square_height = 3
-        y_pos = curses.LINES - square_height - self._BOTTOM_PADDING
-        x_pos = (curses.COLS - (square_width*4) - 4) // 2
+        y_pos = curses.LINES - square_height - self._BOTTOM_PADDING - 3
+        board_width = curses.COLS - self._PANEL_WIDTH
+        x_pos = self._PANEL_WIDTH + (board_width - (square_width * 4) - 4) // 2
 
         for i, sq in enumerate(guess_squares):
             attr = palette.to_curses_pair(sq)
@@ -106,7 +114,8 @@ class CursesRenderer:
         square_height = curses.LINES // 16
         square_width = square_height * 2
         y_pos = 2
-        x_start = (curses.COLS - (square_width*4) - 4) // 2
+        board_width = curses.COLS - self._PANEL_WIDTH
+        x_start = self._PANEL_WIDTH + (board_width - (square_width * 4) - 4) // 2
 
         for idx, guess in enumerate(guessed_squares):
             x_pos = x_start
@@ -120,25 +129,30 @@ class CursesRenderer:
             y_pos += square_height + 1
 
 
-    def _render_score_hud(self, ante: int, score: int, target: int, turns_left: int, blind_label: str) -> None:
-        ante_str = f"ANTE   : {ante}"
-        blind_str = f"BLIND  : {blind_label}"
-        score_str = f"SCORE  : {score}"
-        target_str = f"TARGET : {target}"
-        turns_str = f"TURNS  : {turns_left}"
-        strs = [ante_str, blind_str, score_str, target_str, turns_str]
-        max_len = max(len(s) for s in strs)
-        x = curses.COLS - max_len - 1
+    def _render_left_panel(self, ante: int, score: int, target: int, turns_left: int, blind_label: str, relics: list[Relic]) -> None:
+        x = 2
         y = 1
-
-        for s in strs:
-            self._stdscr.addstr(y, x, s)
+        for line in (
+            f"ANTE   : {ante}",
+            f"BLIND  : {blind_label}",
+            f"SCORE  : {score}",
+            f"TARGET : {target}",
+            f"TURNS  : {turns_left}",
+            ):
+            self._stdscr.addstr(y, x, line)
             y += 1
 
-    def _render_relics(self, relics: list[Relic]) -> None:
-        x = 0
-        for y, relic in enumerate(relics):
+        y += 1
+        self._stdscr.addch(y, 0, curses.ACS_LTEE)
+        self._stdscr.hline(y, 1, curses.ACS_HLINE, self._PANEL_WIDTH - 1)
+        self._stdscr.addch(y, self._PANEL_WIDTH, curses.ACS_RTEE)
+        y += 1
+
+        self._stdscr.addstr(y, x, "RELICS")
+        y += 1
+        for relic in relics:
             self._stdscr.addstr(y, x, str(relic))
+            y += 1
 
 
     def render_shop(self, currency: int, offer: list[Relic], price: int, extra_guess_price: int, selected: int) -> None:
