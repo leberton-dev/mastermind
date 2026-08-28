@@ -23,6 +23,7 @@ class Renderer:
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
+        self._render_score(state.score)
         self._stdscr.refresh()
 
 
@@ -93,3 +94,11 @@ class Renderer:
                 x_pos += square_width + 1
             self._stdscr.addstr(y_pos, x_pos + 5, f"{guessed_feedback[idx].white_pegs}")
             y_pos += square_height + 1
+
+
+    def _render_score(self, score: int) -> None:
+        x = curses.COLS - len(str(score)) - 1
+        y = curses.LINES - 1
+
+        self._stdscr.addstr(y, x, str(score))
+
