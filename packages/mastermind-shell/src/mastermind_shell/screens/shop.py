@@ -6,11 +6,11 @@ from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
 from mastermind_overlay.run.run_state import RunState
 
-from mastermind.engine.input_event import InputEvent
-from mastermind.engine.renderer import Renderer
-from mastermind.engine.screen import Screen
-from mastermind.engine.screen_queue import ScreenQueue
-from mastermind.engine.transition import ScreenTransition
+from mastermind_shell.engine.input_event import InputEvent
+from mastermind_shell.engine.renderer import Renderer
+from mastermind_shell.engine.screen import Screen
+from mastermind_shell.engine.screen_queue import ScreenQueue
+from mastermind_shell.engine.transition import ScreenTransition
 
 _OFFER_SIZE: int = 3
 _EXTRA_GUESS_PRICE: int = 8

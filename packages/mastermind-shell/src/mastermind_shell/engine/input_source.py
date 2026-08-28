@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from mastermind.engine.input_event import InputEvent
+from mastermind_shell.engine.input_event import InputEvent
 
 
 class InputSource(Protocol):

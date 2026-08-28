@@ -1,7 +1,7 @@
 import curses
 
-from mastermind.curses_backend.keymap import keycode_to_event
-from mastermind.engine.input_event import InputEvent
+from mastermind_shell.curses_backend.keymap import keycode_to_event
+from mastermind_shell.engine.input_event import InputEvent
 
 
 class CursesInputSource:

@@ -2,12 +2,12 @@ from typing import override
 
 from mastermind_overlay.run.run_state import RunState
 
-from mastermind.engine.input_event import InputEvent
-from mastermind.engine.renderer import Renderer
-from mastermind.engine.screen import Screen
-from mastermind.engine.screen_queue import ScreenQueue
-from mastermind.engine.transition import ScreenTransition
-from mastermind.screens.gameplay import GameplayScreen
+from mastermind_shell.engine.input_event import InputEvent
+from mastermind_shell.engine.renderer import Renderer
+from mastermind_shell.engine.screen import Screen
+from mastermind_shell.engine.screen_queue import ScreenQueue
+from mastermind_shell.engine.transition import ScreenTransition
+from mastermind_shell.screens.gameplay import GameplayScreen
 
 
 class MenuScreen(Screen):

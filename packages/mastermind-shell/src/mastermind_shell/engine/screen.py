@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from mastermind.engine.input_event import InputEvent
-from mastermind.engine.screen_queue import ScreenQueue
+from mastermind_shell.engine.input_event import InputEvent
+from mastermind_shell.engine.screen_queue import ScreenQueue
 
 
 class Screen(ABC):

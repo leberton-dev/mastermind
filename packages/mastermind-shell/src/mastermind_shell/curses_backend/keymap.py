@@ -1,6 +1,6 @@
 import curses
 
-from mastermind.engine.input_event import InputEvent
+from mastermind_shell.engine.input_event import InputEvent
 
 _DIRECTION_KEYS: dict[int, InputEvent] = {
     curses.KEY_UP: InputEvent.UP,

@@ -1,4 +1,4 @@
-from mastermind.engine.transition import ScreenTransition
+from mastermind_shell.engine.transition import ScreenTransition
 
 
 class ScreenQueue:

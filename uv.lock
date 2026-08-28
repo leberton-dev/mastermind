@@ -4,9 +4,16 @@ requires-python = ">=3.13"
 
 [manifest]
 members = [
-    "mastermind",
     "mastermind-kernel",
     "mastermind-overlay",
+    "mastermind-shell",
+]
+
+[manifest.dependency-groups]
+dev = [
+    { name = "pyright", specifier = ">=1.1.411" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "ruff", specifier = ">=0.6" },
 ]
 
 [[package]]
@@ -28,35 +35,6 @@ wheels = [
 ]
 
 [[package]]
-name = "mastermind"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "mastermind-kernel" },
-    { name = "mastermind-overlay" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pyright" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "mastermind-kernel", editable = "packages/mastermind-kernel" },
-    { name = "mastermind-overlay", editable = "packages/mastermind-overlay" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pyright", specifier = ">=1.1.411" },
-    { name = "pytest", specifier = ">=8.0" },
-    { name = "ruff", specifier = ">=0.6" },
-]
-
-[[package]]
 name = "mastermind-kernel"
 version = "0.1.0"
 source = { editable = "packages/mastermind-kernel" }
@@ -71,6 +49,21 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "mastermind-kernel", editable = "packages/mastermind-kernel" }]
+
+[[package]]
+name = "mastermind-shell"
+version = "0.1.0"
+source = { editable = "packages/mastermind-shell" }
+dependencies = [
+    { name = "mastermind-kernel" },
+    { name = "mastermind-overlay" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "mastermind-kernel", editable = "packages/mastermind-kernel" },
+    { name = "mastermind-overlay", editable = "packages/mastermind-overlay" },
+]
 
 [[package]]
 name = "nodeenv"

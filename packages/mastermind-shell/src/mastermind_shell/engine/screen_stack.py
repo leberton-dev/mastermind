@@ -1,7 +1,7 @@
-from mastermind.engine.input_source import InputSource
-from mastermind.engine.screen import Screen
-from mastermind.engine.screen_queue import ScreenQueue
-from mastermind.engine.transition import TransitionKind
+from mastermind_shell.engine.input_source import InputSource
+from mastermind_shell.engine.screen import Screen
+from mastermind_shell.engine.screen_queue import ScreenQueue
+from mastermind_shell.engine.transition import TransitionKind
 
 
 class ScreenStack:

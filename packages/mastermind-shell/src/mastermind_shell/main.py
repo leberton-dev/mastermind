@@ -1,12 +1,12 @@
 import curses
 from curses import wrapper
 
-from mastermind.curses_backend import palette
-from mastermind.curses_backend.input_source import CursesInputSource
-from mastermind.curses_backend.renderer import CursesRenderer
-from mastermind.engine.screen_queue import ScreenQueue
-from mastermind.engine.screen_stack import ScreenStack
-from mastermind.screens.menu import MenuScreen
+from mastermind_shell.curses_backend import palette
+from mastermind_shell.curses_backend.input_source import CursesInputSource
+from mastermind_shell.curses_backend.renderer import CursesRenderer
+from mastermind_shell.engine.screen_queue import ScreenQueue
+from mastermind_shell.engine.screen_stack import ScreenStack
+from mastermind_shell.screens.menu import MenuScreen
 
 
 def _init_curses(stdscr: curses.window) -> None:
@@ -34,5 +34,9 @@ def main(stdscr: curses.window):
         pass
 
 
-if __name__ == "__main__":
+def run() -> None:
     wrapper(main)
+
+
+if __name__ == "__main__":
+    run()

@@ -1,0 +1,20 @@
+[project]
+name = "mastermind-shell"
+version = "0.1.0"
+description = "Runtime host: screen engine, curses backend, and entry point"
+requires-python = ">=3.13"
+dependencies = ["mastermind-kernel", "mastermind-overlay"]
+
+[project.scripts]
+mastermind = "mastermind_shell.main:run"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mastermind_shell"]
+
+[tool.uv.sources]
+mastermind-kernel = { workspace = true }
+mastermind-overlay = { workspace = true }

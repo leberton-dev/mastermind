@@ -1,8 +1,8 @@
+import random
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import override, Callable
-
-import random
+from typing import override
 
 from mastermind_kernel.feedback import CodeFeedback
 

@@ -7,7 +7,7 @@ from mastermind_kernel.feedback import CodeFeedback
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
 
-from mastermind.curses_backend import palette
+from mastermind_shell.curses_backend import palette
 
 
 class CursesRenderer:

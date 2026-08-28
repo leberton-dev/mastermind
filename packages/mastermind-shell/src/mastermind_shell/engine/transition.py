@@ -4,7 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:
-    from mastermind.engine.screen import Screen
+    from mastermind_shell.engine.screen import Screen
 
 
 class TransitionKind(Enum):
