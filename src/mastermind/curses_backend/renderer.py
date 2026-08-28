@@ -45,10 +45,10 @@ class CursesRenderer:
         self._stdscr.addstr(y, x, text, attr)
 
 
-    def render_gameplay(self, state: GameState, ante: int, blind_label: str, relics: list[Relic]) -> None:
+    def render_gameplay(self, state: GameState, stage: int, tier_label: str, relics: list[Relic]) -> None:
         self._stdscr.clear()
         self._draw_frame()
-        self._render_left_panel(ante, state.score, state.target_score, state.turns_left, blind_label, relics)
+        self._render_left_panel(stage, state.score, state.target_score, state.turns_left, tier_label, relics)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
@@ -130,12 +130,12 @@ class CursesRenderer:
             y_pos += square_height + 1
 
 
-    def _render_left_panel(self, ante: int, score: int, target: int, turns_left: int, blind_label: str, relics: list[Relic]) -> None:
+    def _render_left_panel(self, stage: int, score: int, target: int, turns_left: int, tier_label: str, relics: list[Relic]) -> None:
         x = 2
         y = 1
         for line in (
-            f"ANTE   : {ante}",
-            f"BLIND  : {blind_label}",
+            f"STAGE  : {stage}",
+            f"TIER   : {tier_label}",
             f"SCORE  : {score}",
             f"TARGET : {target}",
             f"TURNS  : {turns_left}",
@@ -167,7 +167,7 @@ class CursesRenderer:
         self._draw_relic_slots(owned_relics, max_relics, selected)
 
         relics_full = len(owned_relics) >= max_relics
-        items = [(str(relic), relic.description, relic.price) for relic in offer] + [("Extra guess", "Gain an extra guess this blind", extra_guess_price)]
+        items = [(str(relic), relic.description, relic.price) for relic in offer] + [("Extra guess", "Gain an extra guess this round", extra_guess_price)]
         self._draw_shop_cards(items, selected - len(owned_relics), len(offer), relics_full)
 
         leave_idx = len(owned_relics) + len(items)

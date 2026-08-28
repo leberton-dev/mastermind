@@ -1,7 +1,7 @@
 from mastermind.core.code import Code
 from mastermind.core.feedback import CodeFeedback
 from mastermind.core.relic import Relic
-from mastermind.core.scoring import Chip, apply_mult, compute_chips
+from mastermind.core.scoring import Points, apply_multiplier, compute_points
 
 
 class GameState:
@@ -67,10 +67,10 @@ class GameState:
         self._guessed_feedback.append(feedback)
 
         mult: int = 1
-        chip: Chip = compute_chips(feedback)
+        points: Points = compute_points(feedback)
         for relic in self._relics:
-            chip, mult = relic.act(chip, mult, feedback)
-        self._score += apply_mult(chip, mult)
+            points, mult = relic.on_guess(points, mult, feedback)
+        self._score += apply_multiplier(points, mult)
         self._current_turn += 1
 
 

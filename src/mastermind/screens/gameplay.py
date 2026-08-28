@@ -41,7 +41,7 @@ class GameplayScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render_gameplay(self._state, self._run_state.ante, self._run_state.blind.label, self._run_state.relics)
+        self._renderer.render_gameplay(self._state, self._run_state.stage, self._run_state.tier.label, self._run_state.relics)
 
 
     def _cycle_color_up(self) -> None:
@@ -65,7 +65,7 @@ class GameplayScreen(Screen):
         if self._state.game_over:
             if self._state.won:
                 self._run_state.reward_round(self._state)
-                self._run_state.advance_blind()
+                self._run_state.advance_round_tier()
                 next_round = self._run_state.new_round()
 
                 game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state, next_round)
