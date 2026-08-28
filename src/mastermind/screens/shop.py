@@ -2,13 +2,7 @@ import random
 from typing import override
 
 from mastermind.core.gamestate import GameState
-from mastermind.core.relic import (
-    ChipPerBlackPegRelic,
-    ChipPerWhitePegRelic,
-    ChipPlusOneRelic,
-    MultPlusOneRelic,
-    Relic,
-)
+from mastermind.core.relic import RELICS, Relic
 from mastermind.core.run import RunState
 from mastermind.engine.input_event import InputEvent
 from mastermind.engine.renderer import Renderer
@@ -20,18 +14,12 @@ _RELIC_PRICE: int = 10
 _OFFER_SIZE: int = 3
 _EXTRA_GUESS_PRICE: int = 8
 
-_RELIC_CLASSES: tuple[type[Relic], ...] = (
-    MultPlusOneRelic,
-    ChipPlusOneRelic,
-    ChipPerBlackPegRelic,
-    ChipPerWhitePegRelic,
-)
-
 def generate_offer(owned: list[Relic]) -> list[Relic]:
-    owned_types = {type(relic) for relic in owned}
-    available = [cls for cls in _RELIC_CLASSES if cls not in owned_types]
+    owned_keys = {relic.spec.key for relic in owned}
+    available = [spec for spec in RELICS if spec.key not in owned_keys]
     count = min(_OFFER_SIZE, len(available))
-    return [cls() for cls in random.sample(available, count)]
+    return [Relic(spec) for spec in random.sample(available, count)]
+
 
 class ShopScreen(Screen):
     def __init__(self, queue: ScreenQueue, renderer: Renderer, run_state: RunState, next_state: GameState) -> None:

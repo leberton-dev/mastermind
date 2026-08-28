@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from enum import Enum
-from typing import override
+from typing import override, Callable
 
 import random
 
@@ -15,6 +15,40 @@ class RelicRarity(Enum):
     LEGENDARY = 4
 
 
+@dataclass(frozen=True)
+class RelicSpec:
+    key: str
+    description: str
+    rarity: RelicRarity
+    effect: Callable[[Chip, int, CodeFeedback], tuple[Chip, int]]
+
+
+RELICS: list[RelicSpec] = [
+    RelicSpec("mult_plus_one", "Add +1 to the multiplier", RelicRarity.COMMON,
+              lambda chip, mult, fb: (chip, mult + 1)),
+    RelicSpec("chip_plus_one", "Add +1 to the chip", RelicRarity.COMMON,
+              lambda chip, mult, fb: (Chip(chip.value + 1), mult)),
+    RelicSpec("chip_per_black_peg", "Add +1 to the chip for each black peg", RelicRarity.UNCOMMON,
+              lambda chip, mult, fb: (Chip(chip.value + fb.black_pegs), mult)),
+    RelicSpec("chip_per_white_peg", "Add +1 to the chip for each white peg", RelicRarity.UNCOMMON,
+              lambda chip, mult, fb: (Chip(chip.value + fb.white_pegs), mult)),
+    RelicSpec("chip_per_peg", "Add +1 to the chip for each peg", RelicRarity.COMMON,
+              lambda chip, mult, fb: (Chip(chip.value + fb.black_pegs + fb.white_pegs), mult)),
+    RelicSpec("mult_on_no_black_peg", "Add +1 to the multiplier if the guess has no black pegs", RelicRarity.COMMON,
+              lambda chip, mult, fb: (chip, mult) if fb.black_pegs > 0 else (chip, mult + 1)),
+    RelicSpec("chip_on_balanced_peg", "Add +2 to the chip if black pegs equal white pegs", RelicRarity.COMMON,
+              lambda chip, mult, fb: (chip, mult) if fb.black_pegs != fb.white_pegs else (Chip(chip.value + 2), mult)),
+    RelicSpec("mult_double_on_win", "Double the multiplier on a winning guess", RelicRarity.UNCOMMON,
+              lambda chip, mult, fb: (chip, mult * 2) if fb.won else (chip, mult)),
+    RelicSpec("mult_on_no_white_peg", "Add +1 to the multiplier if the guess has no white pegs", RelicRarity.UNCOMMON,
+              lambda chip, mult, fb: (chip, mult) if fb.white_pegs != 0 else (chip, mult + 1)),
+    RelicSpec("chip_white_as_black", "Count white pegs as black pegs for chip calculation", RelicRarity.RARE,
+              lambda chip, mult, fb: (Chip(chip.value + fb.white_pegs), mult)),
+    RelicSpec("chip_double_on_win", "Double the chip on a winning guess", RelicRarity.RARE,
+              lambda chip, mult, fb: (Chip(chip.value * 2), mult) if fb.won else (chip, mult)),
+]
+
+
 _PRICE_RANGES: dict[RelicRarity, tuple[int, int]] = {
         RelicRarity.COMMON: (3, 6),
         RelicRarity.UNCOMMON: (5, 8),
@@ -22,182 +56,25 @@ _PRICE_RANGES: dict[RelicRarity, tuple[int, int]] = {
         RelicRarity.LEGENDARY: (20, 20),
         }
 
-class Relic(ABC):
-    description: str
-    rarity: RelicRarity
 
-    def __init__(self) -> None:
-        low, high = _PRICE_RANGES[self.rarity]
+class Relic:
+    def __init__(self, spec: RelicSpec) -> None:
+        self.spec: RelicSpec = spec
+        low, high = _PRICE_RANGES[spec.rarity]
         self.price: int = random.randint(low, high)
 
-    @abstractmethod
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]: ...
+    @property
+    def description(self) -> str:
+        return self.spec.description
 
-    @abstractmethod
-    def __str__(self) -> str: ...
+    @property
+    def rarity(self) -> RelicRarity:
+        return self.spec.rarity
 
-
-class MultPlusOneRelic(Relic):
-    description: str = "Add +1 to the multiplier"
-    rarity: RelicRarity = RelicRarity.COMMON
-
-    @override
     def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        return (chip, mult + 1)
+        return self.spec.effect(chip, mult, feedback)
 
     @override
     def __str__(self) -> str:
-        return "MultPlusOneRelic"
-
-
-class ChipPlusOneRelic(Relic):
-    description: str = "Add +1 to the chip"
-    rarity: RelicRarity = RelicRarity.COMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        new_chip = Chip(chip.value + 1)
-        return (new_chip, mult)
-
-    @override
-    def __str__(self) -> str:
-        return "ChipPlusOneRelic"
-
-
-class ChipPerBlackPegRelic(Relic):
-    description: str = "Add +1 to the chip for each black peg"
-    rarity: RelicRarity = RelicRarity.UNCOMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        new_chip = Chip(chip.value + feedback.black_pegs)
-        return (new_chip, mult)
-
-    @override
-    def __str__(self) -> str:
-        return "ChipPerBlackPegRelic"
-
-
-class ChipPerWhitePegRelic(Relic):
-    description: str = "Add +1 to the chip for each white peg"
-    rarity: RelicRarity = RelicRarity.UNCOMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        new_chip = Chip(chip.value + feedback.white_pegs)
-        return (new_chip, mult)
-
-    @override
-    def __str__(self) -> str:
-        return "ChipPerWhitePegRelic"
-
-class ChipPerPegRelic(Relic):
-    description: str = "Add +1 to the chip for each peg"
-    rarity: RelicRarity = RelicRarity.COMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        new_value: int = chip.value
-
-        for _ in range(feedback.black_pegs + feedback.white_pegs):
-            new_value += 1
-        new_chip = Chip(new_value)
-
-        return (new_chip, mult)
-
-    @override
-    def __str__(self) -> str:
-        return "ChipPerPegRelic"
-
-
-class MultOnNoBlackPegRelic(Relic):
-    description: str = "Add +1 on the multiplier if the guess has no black pegs"
-    rarity: RelicRarity = RelicRarity.COMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        if feedback.black_pegs > 0:
-            return (chip, mult)
-        return (chip, mult + 1)
-
-    @override
-    def __str__(self) -> str:
-        return "MultOnNoBlackPegRelic"
-
-
-class ChipOnBalancedPegRelic(Relic):
-    description: str = "Add +2 to the chip if black pegs equal white pegs"
-    rarity: RelicRarity = RelicRarity.COMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        if feedback.black_pegs != feedback.white_pegs:
-            return (chip, mult)
-        return (Chip(chip.value + 2), mult)
-
-    @override
-    def __str__(self) -> str:
-        return "ChipOnBalancedPegRelic"
-
-
-class MultDoubleOnWinRelic(Relic):
-    description: str = "Double the multiplier on a winning guess"
-    rarity: RelicRarity = RelicRarity.UNCOMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        if feedback.won:
-            return (chip, mult * 2)
-        return (chip, mult)
-
-
-    @override
-    def __str__(self) -> str:
-        return "MultDoubleOnWinRelic"
-
-
-class MultOnNoWhitePegRelic(Relic):
-    description: str = "Add +1 to the multiplier if the guess has no white pegs"
-    rarity: RelicRarity = RelicRarity.UNCOMMON
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        if feedback.white_pegs != 0:
-            return (chip, mult)
-        return (chip, mult + 1)
-
-    @override
-    def __str__(self) -> str:
-        return "MultOnNoWhitePegRelic"
-
-
-class ChipWhiteAsBlackRelic(Relic):
-    description: str = "Count white pegs as black pegs for chip calculation"
-    rarity: RelicRarity = RelicRarity.RARE
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        # TODO: to implement
-        return (chip, mult)
-
-    @override
-    def __str__(self) -> str:
-        return "ChipWhiteAsBlackRelic"
-
-
-class ChipDoubleOnWinRelic(Relic):
-    description: str = "Double the chip on a winning guess"
-    rarity: RelicRarity = RelicRarity.RARE
-
-    @override
-    def act(self, chip: Chip, mult: int, feedback: CodeFeedback) -> tuple[Chip, int]:
-        if feedback.won:
-            return (Chip(chip.value * 2), mult)
-        return (chip, mult)
-    
-
-    @override
-    def __str__(self) -> str:
-        return "ChipDoubleOnWinRelic"
-
+        return self.spec.key
 
