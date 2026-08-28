@@ -4,7 +4,8 @@ from typing import override, Callable
 
 import random
 
-from mastermind.core.feedback import CodeFeedback
+from mastermind_kernel.feedback import CodeFeedback
+
 from mastermind.core.scoring import Points
 
 

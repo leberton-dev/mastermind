@@ -1,6 +1,6 @@
 import curses
 
-from mastermind.core.colors import PegColor
+from mastermind_kernel.colors import PegColor
 
 
 def init_color_pairs() -> None:

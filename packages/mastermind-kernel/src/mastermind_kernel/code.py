@@ -1,7 +1,7 @@
 import random
 
-from mastermind.core.colors import PegColor
-from mastermind.core.feedback import CodeFeedback
+from mastermind_kernel.colors import PegColor
+from mastermind_kernel.feedback import CodeFeedback
 
 
 class Code:

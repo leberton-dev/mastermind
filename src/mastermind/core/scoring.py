@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from mastermind.core.feedback import CodeFeedback
+from mastermind_kernel.feedback import CodeFeedback
 
 
 @dataclass

@@ -2,8 +2,9 @@ import curses
 import textwrap
 from curses.textpad import rectangle
 
-from mastermind.core.code import Code
-from mastermind.core.feedback import CodeFeedback
+from mastermind_kernel.code import Code
+from mastermind_kernel.feedback import CodeFeedback
+
 from mastermind.core.gamestate import GameState
 from mastermind.core.relic import Relic
 from mastermind.curses_backend import palette

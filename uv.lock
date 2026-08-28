@@ -2,6 +2,12 @@ version = 1
 revision = 3
 requires-python = ">=3.13"
 
+[manifest]
+members = [
+    "mastermind",
+    "mastermind-kernel",
+]
+
 [[package]]
 name = "colorama"
 version = "0.4.6"
@@ -24,6 +30,9 @@ wheels = [
 name = "mastermind"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "mastermind-kernel" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -32,12 +41,18 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "mastermind-kernel", editable = "packages/mastermind-kernel" }]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "pytest", specifier = ">=8.0" },
     { name = "ruff", specifier = ">=0.6" },
 ]
+
+[[package]]
+name = "mastermind-kernel"
+version = "0.1.0"
+source = { editable = "packages/mastermind-kernel" }
 
 [[package]]
 name = "packaging"

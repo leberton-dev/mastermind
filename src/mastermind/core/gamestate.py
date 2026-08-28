@@ -1,5 +1,6 @@
-from mastermind.core.code import Code
-from mastermind.core.feedback import CodeFeedback
+from mastermind_kernel.code import Code
+from mastermind_kernel.feedback import CodeFeedback
+
 from mastermind.core.relic import Relic
 from mastermind.core.scoring import Points, apply_multiplier, compute_points
 
