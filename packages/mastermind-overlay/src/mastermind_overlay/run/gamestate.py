@@ -3,7 +3,7 @@ from mastermind_kernel.feedback import CodeFeedback
 
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.scoring.pipeline import ScoringPipeline
-from mastermind_overlay.scoring.points import Points, apply_multiplier, compute_points
+from mastermind_overlay.scoring.points import apply_multiplier, compute_points
 from mastermind_overlay.boss_mutators.mutator import BossMutator
 
 
@@ -70,7 +70,10 @@ class GameState:
     def submit_guess(self) -> None:
         self._guessed_codes.append(self._current_code)
         feedback: CodeFeedback = self._secret_code.feedback(self._current_code)
-        self._guessed_feedback.append(feedback)
+        displayed_feedback = feedback
+        if self._mutator is not None:
+            displayed_feedback = self._mutator.transform_feedback(feedback)
+        self._guessed_feedback.append(displayed_feedback)
 
         points, mult = self._pipeline.run(compute_points(feedback), 1, feedback)
         self._score += apply_multiplier(points, mult)
