@@ -1,9 +1,10 @@
 from mastermind.core.feedback import CodeFeedback
 from mastermind.core.code import Code
-from mastermind.core.scoring import compute_chips, apply_mult
+from mastermind.core.scoring import compute_chips, apply_mult, Chip
+from mastermind.core.relic import Relic
 
 class GameState:
-    def __init__(self, max_turns: int, target_score: int) -> None:
+    def __init__(self, max_turns: int, target_score: int, relics: list[Relic]) -> None:
         self._max_turns: int = max_turns
         self._target_score: int = target_score
         self._current_turn: int = 0
@@ -13,6 +14,7 @@ class GameState:
         self._guessed_codes: list[Code] = []
         self._guessed_feedback: list[CodeFeedback] = []
         self._score: int = 0
+        self._relics: list[Relic] = relics
 
     @property
     def current_peg(self) -> int:
@@ -63,8 +65,10 @@ class GameState:
         feedback: CodeFeedback = self._secret_code.feedback(self._current_code)
         self._guessed_feedback.append(feedback)
 
-        mult = 1
-        chip = compute_chips(feedback)
+        mult: int = 1
+        chip: Chip = compute_chips(feedback)
+        for relic in self._relics:
+            chip, mult = relic.act(chip, mult, feedback)
         self._score += apply_mult(chip, mult)
         self._current_turn += 1
 

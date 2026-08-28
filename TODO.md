@@ -7,8 +7,8 @@
 - [x] distinct screens for round cleared vs run over
 
 ### Relics / Jokers
-- [ ] passive items that modify the chips/mult calculation
-- [ ] single hook/event point where relics can intercept scoring
+- [x] passive items that modify the chips/mult calculation
+- [x] single hook/event point where relics can intercept scoring
 - [ ] display of the active relics inventory
 
 ### Economy / shop
