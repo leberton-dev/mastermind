@@ -4,6 +4,7 @@ from curses.textpad import rectangle
 from mastermind.ui import palette
 from mastermind.core.code import Code
 from mastermind.core.gamestate import GameState
+from mastermind.core.relic import Relic
 
 from mastermind.core.feedback import CodeFeedback
 
@@ -17,13 +18,14 @@ class Renderer:
         self._stdscr: curses.window = stdscr
 
 
-    def render(self, state: GameState, ante: int) -> None:
+    def render(self, state: GameState, ante: int, relics: list[Relic]) -> None:
         self._stdscr.clear()
         self._stdscr.addstr(1, (curses.COLS - len("Welcome to Mastermind")) // 2, "Welcome to Mastermind", curses.A_STANDOUT)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
         self._render_score_hud(ante, state.score, state.target_score, state.turns_left)
+        self._render_relics(relics)
         self._stdscr.refresh()
 
 
@@ -32,11 +34,16 @@ class Renderer:
         self._stdscr.addstr(curses.LINES-2, 1, "TOP/DOWN: cycle trough colors")
         self._stdscr.addstr(curses.LINES-1, 1, "ENTER: submit colors")
 
-    def win(self) -> None:
+    def win(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(
             curses.LINES // 2,
             (curses.COLS + len(self._WIN_STR)) // 2,
             self._WIN_STR,
+            curses.A_STANDOUT)
+        self._stdscr.addstr(
+            curses.LINES // 2 + 1,
+            (curses.COLS - len(correct_guess_str)) // 2,
+            correct_guess_str,
             curses.A_STANDOUT)
 
     def loose(self, correct_guess_str: str) -> None:
@@ -110,3 +117,8 @@ class Renderer:
             self._stdscr.addstr(y, x, s)
             y += 1
 
+    def _render_relics(self, relics: list[Relic]) -> None:
+        x = 0
+        y = 0
+        for relic in relics:
+            self._stdscr.addstr(y, x, str(relic))

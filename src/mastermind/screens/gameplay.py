@@ -39,7 +39,7 @@ class GameplayScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render(self._state, self._run_state.ante)
+        self._renderer.render(self._state, self._run_state.ante, self._run_state.relics)
 
 
     def _cycle_color_up(self) -> None:

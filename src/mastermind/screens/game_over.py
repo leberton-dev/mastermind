@@ -28,6 +28,6 @@ class GameOverScreen(Screen):
     @override
     def render(self) -> None:
         if self._state.won:
-            self._renderer.win()
+            self._renderer.win(f"You found {[c.name for c in self._state.secret_code]}")
         else:
             self._renderer.loose(f"Correct was {[c.name for c in self._state.secret_code]}")
