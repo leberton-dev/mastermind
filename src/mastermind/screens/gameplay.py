@@ -64,6 +64,7 @@ class GameplayScreen(Screen):
             if self._state.won:
                 game_over = GameOverScreen(self._stdscr, self._queue, self._renderer, self._state)
                 self._queue.push(ScreenTransition.push(game_over))
+                self._run_state.reward_round(self._state)
                 self._run_state.advance_ante()
                 self._state = self._run_state.new_round()
 

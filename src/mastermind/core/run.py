@@ -1,5 +1,6 @@
 from mastermind.core.gamestate import GameState
 from mastermind.core.relic import Relic
+from mastermind.core.currency import reward_for
 
 
 class RunState:
@@ -10,6 +11,7 @@ class RunState:
     def __init__(self) -> None:
         self._ante: int = 1
         self._relics: list[Relic] = []
+        self._currency: int = 0
 
 
     @property
@@ -24,6 +26,11 @@ class RunState:
 
     def advance_ante(self) -> None:
         self._ante += 1
+
+
+    def reward_round(self, state: GameState) -> None:
+        margin = state.score - state.target_score
+        self._currency += reward_for(state.turns_left, margin)
 
 
     def new_round(self) -> GameState:

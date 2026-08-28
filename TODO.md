@@ -9,10 +9,10 @@
 ### Relics / Jokers
 - [x] passive items that modify the chips/mult calculation
 - [x] single hook/event point where relics can intercept scoring
-- [ ] display of the active relics inventory
+- [x] display of the active relics inventory
 
 ### Economy / shop
-- [ ] currency earned at the end of a round (turns saved, score margin...)
+- [x] currency earned at the end of a round (turns saved, score margin...)
 - [ ] shop screen between antes
 - [ ] purchases: relics, extra guess, hint, color reroll
 
