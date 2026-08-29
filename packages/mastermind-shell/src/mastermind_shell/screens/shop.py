@@ -1,6 +1,7 @@
 import random
 from typing import override
 
+from mastermind_overlay.events.catalog.shop_entered import ShopEntered
 from mastermind_overlay.relics.catalog import RELICS
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
@@ -11,6 +12,7 @@ from mastermind_shell.engine.renderer import Renderer
 from mastermind_shell.engine.screen import Screen
 from mastermind_shell.engine.screen_queue import ScreenQueue
 from mastermind_shell.engine.transition import ScreenTransition
+from mastermind_shell.screens.boss_announcement import BossAnnouncementScreen
 
 _OFFER_SIZE: int = 3
 _EXTRA_GUESS_PRICE: int = 8
@@ -30,6 +32,7 @@ class ShopScreen(Screen):
         self._next_state: GameState = next_state
         self._offer: list[Relic] = generate_offer(run_state.relics)
         self._cursor: int = 0
+        run_state.events.publish(ShopEntered())
 
 
     @override
@@ -51,6 +54,10 @@ class ShopScreen(Screen):
                 self._buy_extra_guess()
             else:
                 self._queue.push(ScreenTransition.pop())
+                if self._next_state.mutator is not None:
+                    self._queue.push(ScreenTransition.push(
+                        BossAnnouncementScreen(self._queue, self._renderer, self._next_state.mutator)
+                    ))
         if event == InputEvent.QUIT:
             self._queue.push(ScreenTransition.pop())
 
