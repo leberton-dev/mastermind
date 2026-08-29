@@ -67,6 +67,11 @@ class GameState:
     def target_score(self) -> int:
         return self._target_score
 
+    @property
+    def mutator(self) -> BossMutator | None:
+        return self._mutator
+
+
     def submit_guess(self) -> None:
         self._guessed_codes.append(self._current_code)
         feedback: CodeFeedback = self._secret_code.feedback(self._current_code)

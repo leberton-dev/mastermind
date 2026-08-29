@@ -242,3 +242,18 @@ class CursesRenderer:
             self._stdscr.addstr(y_pos + card_height - 2, x + (card_width - len(price_str)) // 2, price_str, text_attr)
 
             x += card_width + 1
+
+
+    def render_boss_announcement(self, title: str, description: str) -> None:
+        self._stdscr.clear()
+        self._stdscr.addstr(
+            curses.LINES // 2,
+            (curses.COLS - len(title)) // 2,
+            title,
+            curses.A_STANDOUT)
+        self._stdscr.addstr(
+            curses.LINES // 2 + 1,
+            (curses.COLS - len(description)) // 2,
+            description,
+            curses.A_STANDOUT)
+        self._stdscr.refresh()

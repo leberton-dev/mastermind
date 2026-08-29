@@ -12,6 +12,7 @@ from mastermind_shell.engine.renderer import Renderer
 from mastermind_shell.engine.screen import Screen
 from mastermind_shell.engine.screen_queue import ScreenQueue
 from mastermind_shell.engine.transition import ScreenTransition
+from mastermind_shell.screens.boss_announcement import BossAnnouncementScreen
 
 _OFFER_SIZE: int = 3
 _EXTRA_GUESS_PRICE: int = 8
@@ -53,6 +54,10 @@ class ShopScreen(Screen):
                 self._buy_extra_guess()
             else:
                 self._queue.push(ScreenTransition.pop())
+                if self._next_state.mutator is not None:
+                    self._queue.push(ScreenTransition.push(
+                        BossAnnouncementScreen(self._queue, self._renderer, self._next_state.mutator)
+                    ))
         if event == InputEvent.QUIT:
             self._queue.push(ScreenTransition.pop())
 
