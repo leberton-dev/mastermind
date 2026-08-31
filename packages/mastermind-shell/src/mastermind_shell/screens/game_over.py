@@ -15,7 +15,7 @@ class GameOverScreen(Screen):
     def __init__(self, queue: ScreenQueue, renderer: Renderer, state: GameState, run_state: RunState, next_state: GameState | None) -> None:
         super().__init__(queue, False)
         self._renderer: Renderer = renderer
-        self._state: GameState = state
+        self._game_state: GameState = state
         self._run_state: RunState = run_state
         self._next_state: GameState | None = next_state
 
@@ -23,7 +23,10 @@ class GameOverScreen(Screen):
     @override
     def handle_input(self, event: InputEvent) -> None:
         self._queue.push(ScreenTransition.pop())
-        if self._state.won:
+        if self._run_state.run_over:
+            self._queue.push(ScreenTransition.pop())
+            return
+        if self._game_state.won:
             assert self._next_state is not None
             self._queue.push(ScreenTransition.push(ShopScreen(self._queue, self._renderer, self._run_state, self._next_state)))
         else:
@@ -37,7 +40,9 @@ class GameOverScreen(Screen):
 
     @override
     def render(self) -> None:
-        if self._state.won:
-            self._renderer.render_win(f"You found {[c.name for c in self._state.secret_code]}")
+        if self._run_state.run_over:
+            self._renderer.render_run_over()
+        elif self._game_state.won:
+            self._renderer.render_win(f"You found {[c.name for c in self._game_state.secret_code]}")
         else:
-            self._renderer.render_loose(f"Correct was {[c.name for c in self._state.secret_code]}")
+            self._renderer.render_loose(f"Correct was {[c.name for c in self._game_state.secret_code]}")

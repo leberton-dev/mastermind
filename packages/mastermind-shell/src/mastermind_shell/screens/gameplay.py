@@ -14,7 +14,7 @@ from mastermind_shell.screens.game_over import GameOverScreen
 class GameplayScreen(Screen):
     def __init__(self, queue: ScreenQueue, renderer: Renderer, run_state: RunState) -> None:
         super().__init__(queue, True)
-        self._state: GameState = run_state.new_round()
+        self._game_state: GameState = run_state.new_round()
         self._renderer: Renderer = renderer
         self._run_state: RunState = run_state
 
@@ -42,43 +42,48 @@ class GameplayScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render_gameplay(self._state, self._run_state.stage, self._run_state.tier.label, self._run_state.relics)
+        self._renderer.render_gameplay(self._game_state, self._run_state.stage, self._run_state.tier.label, self._run_state.relics)
 
 
     def _cycle_color_up(self) -> None:
-        self._state.cycle_color(-1)
+        self._game_state.cycle_color(-1)
 
     def _cycle_color_down(self) -> None:
-        self._state.cycle_color(1)
+        self._game_state.cycle_color(1)
 
     def _move_left(self) -> None:
-        self._state.cycle_current_square(-1)
+        self._game_state.cycle_current_square(-1)
 
     def _move_right(self) -> None:
-        self._state.cycle_current_square(1)
+        self._game_state.cycle_current_square(1)
 
     def _quit(self) -> None:
         self._queue.push(ScreenTransition.pop())
 
     def _submit_guess(self) -> None:
         try:
-            self._state.submit_guess()
+            self._game_state.submit_guess()
         except ValueError:
             self._renderer.error("You cannot put the same again")
 
-        if self._state.game_over:
-            if self._state.won:
-                self._run_state.reward_round(self._state)
+        if self._run_state.run_over:
+            game_over = GameOverScreen(self._queue, self._renderer, self._game_state, self._run_state, None)
+            self._queue.push(ScreenTransition.push(game_over))
+            return
+
+        elif self._game_state.game_over:
+            if self._game_state.won:
+                self._run_state.reward_round(self._game_state)
                 self._run_state.advance_round_tier()
                 next_round = self._run_state.new_round()
 
-                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state, next_round)
+                game_over = GameOverScreen(self._queue, self._renderer, self._game_state, self._run_state, next_round)
                 self._queue.push(ScreenTransition.push(game_over))
 
-                self._state = next_round
+                self._game_state = next_round
 
-            if self._state.lost:
-                game_over = GameOverScreen(self._queue, self._renderer, self._state, self._run_state, None)
+            if self._game_state.lost:
+                game_over = GameOverScreen(self._queue, self._renderer, self._game_state, self._run_state, None)
                 self._queue.push(ScreenTransition.push(game_over))
 
-        self._state.reset_current_guess()
+        self._game_state.reset_current_guess()

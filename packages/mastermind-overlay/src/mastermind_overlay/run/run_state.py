@@ -14,6 +14,7 @@ class RunState:
     _BASE_MAX_TURNS: int = 10
     _BASE_TARGET_SCORE: int = 15
     _TARGET_SCORE_GROWTH: float = 1.8
+    _MAX_STAGES: int = 5
     _TIER_ORDER: tuple[RoundTier, ...] = (RoundTier.STANDARD, RoundTier.HARDENED, RoundTier.FINAL)
 
 
@@ -49,6 +50,10 @@ class RunState:
     @property
     def max_relics(self) -> int:
         return self._max_relics
+
+    @property
+    def run_over(self) -> bool:
+        return self._stage == self._MAX_STAGES + 1
 
 
     def advance_round_tier(self) -> None:

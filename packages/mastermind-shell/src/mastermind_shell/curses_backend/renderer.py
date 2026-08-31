@@ -14,6 +14,7 @@ class CursesRenderer:
     _BOTTOM_PADDING: int = 1
     _WIN_STR: str = "You won, let's go to the next round."
     _LOOSE_STR: str = "You lost, you must restart haha..."
+    _RUN_OVER_STR: str = "You finished the run, good for you."
     _PANEL_WIDTH: int = 22
 
 
@@ -59,6 +60,13 @@ class CursesRenderer:
     def _render_commands(self) -> None:
         y = curses.LINES - 3
         self._stdscr.addstr(y, self._PANEL_WIDTH + 2, "LEFT/RIGHT: box    UP/DOWN: color    ENTER: submit")
+
+    def render_run_over(self) -> None:
+        self._stdscr.addstr(
+            curses.LINES // 2,
+            (curses.COLS + len(self._RUN_OVER_STR)) // 2,
+            self._RUN_OVER_STR,
+            curses.A_STANDOUT)
 
     def render_win(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(
@@ -178,8 +186,6 @@ class CursesRenderer:
         leave_str = "[ Leave Shop ]"
         attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
         self._stdscr.addstr(curses.LINES - 4, (curses.COLS - len(leave_str)) // 2, leave_str, attr)
-
-
 
         self._stdscr.addstr(curses.LINES - 3, 2, "LEFT/RIGHT: select   ENTER: buy/sell/leave")
         self._stdscr.refresh()
