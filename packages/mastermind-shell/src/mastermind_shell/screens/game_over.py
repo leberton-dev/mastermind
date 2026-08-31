@@ -23,9 +23,11 @@ class GameOverScreen(Screen):
     @override
     def handle_input(self, event: InputEvent) -> None:
         self._queue.push(ScreenTransition.pop())
+
         if self._run_state.run_over:
             self._queue.push(ScreenTransition.pop())
             return
+
         if self._game_state.won:
             assert self._next_state is not None
             self._queue.push(ScreenTransition.push(ShopScreen(self._queue, self._renderer, self._run_state, self._next_state)))

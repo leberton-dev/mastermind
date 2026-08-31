@@ -13,6 +13,7 @@ from mastermind_shell.curses_backend import palette
 class CursesRenderer:
     _BOTTOM_PADDING: int = 1
     _WIN_STR: str = "You won, let's go to the next round."
+    _RUN_WIN_STR: str = "You finished the run"
     _LOOSE_STR: str = "You lost, you must restart haha..."
     _RUN_OVER_STR: str = "You finished the run, good for you."
     _PANEL_WIDTH: int = 22
@@ -90,6 +91,13 @@ class CursesRenderer:
             curses.LINES // 2 + 1,
             (curses.COLS - len(correct_guess_str)) // 2,
             correct_guess_str,
+            curses.A_STANDOUT)
+
+    def render_win_run(self) -> None:
+        self._stdscr.addstr(
+            curses.LINES // 2,
+            (curses.COLS + len(self._RUN_WIN_STR)) // 2,
+            self._WIN_STR,
             curses.A_STANDOUT)
 
 

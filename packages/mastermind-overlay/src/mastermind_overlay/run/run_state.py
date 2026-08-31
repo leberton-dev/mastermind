@@ -16,6 +16,7 @@ class RunState:
     _TARGET_SCORE_GROWTH: float = 1.8
     _MAX_STAGES: int = 5
     _TIER_ORDER: tuple[RoundTier, ...] = (RoundTier.STANDARD, RoundTier.HARDENED, RoundTier.FINAL)
+    _MAX_RUN_STAGES: int = 2
 
 
     def __init__(self) -> None:
