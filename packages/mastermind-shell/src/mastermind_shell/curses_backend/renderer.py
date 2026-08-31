@@ -257,3 +257,12 @@ class CursesRenderer:
             description,
             curses.A_STANDOUT)
         self._stdscr.refresh()
+
+    def error(self, message: str) -> None:
+        self._stdscr.addstr(
+            curses.LINES // 2,
+            (curses.COLS - len(message)) // 2,
+            message,
+            curses.A_STANDOUT)
+        _ = self._stdscr.getch()
+

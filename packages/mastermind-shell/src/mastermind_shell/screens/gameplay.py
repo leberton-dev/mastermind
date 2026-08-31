@@ -61,7 +61,10 @@ class GameplayScreen(Screen):
         self._queue.push(ScreenTransition.pop())
 
     def _submit_guess(self) -> None:
-        self._state.submit_guess()
+        try:
+            self._state.submit_guess()
+        except ValueError:
+            self._renderer.error("You cannot put the same again")
 
         if self._state.game_over:
             if self._state.won:

@@ -1,4 +1,5 @@
 import random
+from typing import override
 
 from mastermind_kernel.colors import PegColor
 from mastermind_kernel.feedback import CodeFeedback
@@ -47,6 +48,13 @@ class Code:
 
     def __len__(self) -> int:
         return len(self._pegs)
+
+    @override
+    def __eq__(self, other: "Code") -> bool:
+        if not isinstance(other, Code):
+            return NotImplemented
+
+        return self._pegs == other._pegs
 
 
     def _count_black_pegs(self, secret: list[PegColor], guess: list[PegColor]) -> int:

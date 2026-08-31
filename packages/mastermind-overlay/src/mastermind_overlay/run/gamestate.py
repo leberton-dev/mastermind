@@ -73,6 +73,8 @@ class GameState:
 
 
     def submit_guess(self) -> None:
+        if self._current_code in self._guessed_codes:
+            raise ValueError("Code already exists in guessed codes")
         self._guessed_codes.append(self._current_code)
         feedback: CodeFeedback = self._secret_code.feedback(self._current_code)
         displayed_feedback = feedback

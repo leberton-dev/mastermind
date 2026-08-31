@@ -8,6 +8,7 @@ from mastermind_shell.engine.screen_queue import ScreenQueue
 from mastermind_shell.engine.screen_stack import ScreenStack
 from mastermind_shell.screens.menu import MenuScreen
 
+# import debugpy
 
 def _init_curses(stdscr: curses.window) -> None:
     _ = curses.curs_set(0)
@@ -35,6 +36,9 @@ def main(stdscr: curses.window):
 
 
 def run() -> None:
+    # _ = debugpy.listen(("127.0.0.1", 5678))
+    # print("Waiting for debugger...")
+    # debugpy.wait_for_client()
     wrapper(main)
 
 
