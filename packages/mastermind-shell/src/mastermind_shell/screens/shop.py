@@ -39,7 +39,8 @@ class ShopScreen(Screen):
     def handle_input(self, event: InputEvent) -> None:
         owned_count = len(self._run_state.relics)
         extra_guess_idx = owned_count + len(self._offer)
-        leave_idx = extra_guess_idx + 1
+        reroll_idx = extra_guess_idx + 1
+        leave_idx = reroll_idx + 1
 
         if  event == InputEvent.LEFT:
             self._cursor = (self._cursor - 1) % (leave_idx + 1)
@@ -52,6 +53,8 @@ class ShopScreen(Screen):
                 self._buy_relic()
             elif self._cursor == extra_guess_idx:
                 self._buy_extra_guess()
+            elif self._cursor == reroll_idx:
+                self._reroll_offers()
             else:
                 self._queue.push(ScreenTransition.pop())
                 if self._next_state.mutator is not None:
@@ -68,6 +71,8 @@ class ShopScreen(Screen):
 
     @override
     def render(self) -> None:
+        reroll_price = 5
+
         self._renderer.render_shop(
             self._run_state.currency,
             self._offer,
@@ -75,7 +80,15 @@ class ShopScreen(Screen):
             self._cursor,
             self._run_state.relics,
             self._run_state.max_relics,
+            reroll_price,
         )
+
+
+    def _reroll_offers(self) -> None:
+        if self._run_state.currency < 5:
+            return
+        self._run_state.spend(5)
+        self._offer = generate_offer(self._run_state.relics)
 
 
     def _buy_relic(self) -> None:

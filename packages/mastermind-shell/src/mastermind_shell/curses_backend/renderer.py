@@ -157,30 +157,50 @@ class CursesRenderer:
             y += 1
 
 
-    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int, owned_relics: list[Relic], max_relics: int) -> None:
+    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int, owned_relics: list[Relic], max_relics: int, reroll_price: int) -> None:
         self._stdscr.clear()
-        rectangle(self._stdscr, 0, 0, curses.LINES - 2, curses.COLS - 2)
+        rectangle(self._stdscr, 0, 1, curses.LINES - 2, curses.COLS - 2)
 
         title = "SHOP"
         self._stdscr.addstr(1, (curses.COLS - len(title)) // 2, title, curses.A_BOLD | curses.A_STANDOUT)
         self._stdscr.addstr(1, 2, f"$ {currency}")
 
-        self._draw_relic_slots(owned_relics, max_relics, selected)
+        self._render_relic_slots(owned_relics, max_relics, selected)
 
         relics_full = len(owned_relics) >= max_relics
         items = [(str(relic), relic.description, relic.price) for relic in offer] + [("Extra guess", "Gain an extra guess this round", extra_guess_price)]
-        self._draw_shop_cards(items, selected - len(owned_relics), len(offer), relics_full)
+        self._render_shop_cards(items, selected - len(owned_relics), len(offer), relics_full)
 
-        leave_idx = len(owned_relics) + len(items)
+        reroll_idx = len(owned_relics) + len(items)
+        self._render_shop_reroll(reroll_price, selected == reroll_idx)
+
+        leave_idx = reroll_idx + 1
         leave_str = "[ Leave Shop ]"
         attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
         self._stdscr.addstr(curses.LINES - 4, (curses.COLS - len(leave_str)) // 2, leave_str, attr)
+
+
 
         self._stdscr.addstr(curses.LINES - 3, 2, "LEFT/RIGHT: select   ENTER: buy/sell/leave")
         self._stdscr.refresh()
 
 
-    def _draw_relic_slots(self, owned_relics: list[Relic], max_relics: int, selected: int) -> None:
+    def _render_shop_reroll(self, price: int, selected: bool) -> None:
+        width = 18
+        height = 5
+        x_pos = curses.COLS - width - 4
+        y_pos = (curses.LINES - height) // 2
+        border_attr = curses.color_pair(7) if selected else curses.A_NORMAL
+
+        self._stdscr.attron(border_attr)
+        rectangle(self._stdscr, y_pos, x_pos, y_pos + height, x_pos + width)
+        self._stdscr.attroff(border_attr)
+
+        self._stdscr.addstr(y_pos + (height // 2), x_pos + (width - len("REROLL")) // 2, "REROLL")
+        self._stdscr.addstr(y_pos + (height // 2) + 1, x_pos + (width - len(f"${price}")) // 2, f"${price}")
+
+
+    def _render_relic_slots(self, owned_relics: list[Relic], max_relics: int, selected: int) -> None:
         slot_width = 16
         slot_height = 4
         total_width = slot_width * max_relics + (max_relics - 1)
@@ -209,7 +229,7 @@ class CursesRenderer:
             x += slot_width + 1
 
 
-    def _draw_shop_cards(self, items: list[tuple[str, str, int]], selected: int, relic_count: int, relics_full: bool) -> None:
+    def _render_shop_cards(self, items: list[tuple[str, str, int]], selected: int, relic_count: int, relics_full: bool) -> None:
         card_width = 25
         card_height = 14
         total_width = card_width * len(items) + (len(items) - 1)
