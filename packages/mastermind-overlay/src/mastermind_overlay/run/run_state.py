@@ -14,7 +14,6 @@ class RunState:
     _BASE_MAX_TURNS: int = 10
     _BASE_TARGET_SCORE: int = 15
     _TARGET_SCORE_GROWTH: float = 1.8
-    _MAX_STAGES: int = 5
     _TIER_ORDER: tuple[RoundTier, ...] = (RoundTier.STANDARD, RoundTier.HARDENED, RoundTier.FINAL)
     _MAX_RUN_STAGES: int = 2
 
@@ -26,6 +25,7 @@ class RunState:
         self._currency: int = 0
         self._tier_idx: int = 0
         self._events: EventBus = EventBus()
+        self._max_run_stages: int = self._MAX_RUN_STAGES
 
 
     @property
@@ -54,7 +54,13 @@ class RunState:
 
     @property
     def run_over(self) -> bool:
-        return self._stage == self._MAX_STAGES + 1
+        return self.stage >= self._max_run_stages + 1
+
+
+    def set_max_stages(self, amount: int) -> None:
+        if amount <= self._max_run_stages:
+            return
+        self._max_run_stages = amount
 
 
     def advance_round_tier(self) -> None:

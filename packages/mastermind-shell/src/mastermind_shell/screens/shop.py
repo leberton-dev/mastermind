@@ -62,7 +62,11 @@ class ShopScreen(Screen):
                         BossAnnouncementScreen(self._queue, self._renderer, self._next_state.mutator)
                     ))
         if event == InputEvent.QUIT:
-            self._queue.push(ScreenTransition.pop())
+            if self._next_state.mutator is not None:
+                self._queue.push(ScreenTransition.push(
+                    BossAnnouncementScreen(self._queue, self._renderer, self._next_state.mutator)
+                ))
+                self._queue.push(ScreenTransition.pop())
 
 
     @override

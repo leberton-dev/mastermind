@@ -9,6 +9,7 @@ from mastermind_shell.engine.screen import Screen
 from mastermind_shell.engine.screen_queue import ScreenQueue
 from mastermind_shell.engine.transition import ScreenTransition
 from mastermind_shell.screens.game_over import GameOverScreen
+from mastermind_shell.screens.run_over import RunOverScreen
 
 
 class GameplayScreen(Screen):
@@ -66,23 +67,24 @@ class GameplayScreen(Screen):
         except ValueError:
             self._renderer.error("You cannot put the same again")
 
-        if self._run_state.run_over:
-            game_over = GameOverScreen(self._queue, self._renderer, self._game_state, self._run_state, None)
-            self._queue.push(ScreenTransition.push(game_over))
-            return
-
-        elif self._game_state.game_over:
+        if self._game_state.game_over:
             if self._game_state.won:
                 self._run_state.reward_round(self._game_state)
                 self._run_state.advance_round_tier()
                 next_round = self._run_state.new_round()
+
+                if self._run_state.run_over:
+                    run_over = RunOverScreen(self._queue, self._renderer, self._game_state, self._run_state, next_round)
+                    self._queue.push(ScreenTransition.push(run_over))
+                    self._game_state = next_round
+                    return
 
                 game_over = GameOverScreen(self._queue, self._renderer, self._game_state, self._run_state, next_round)
                 self._queue.push(ScreenTransition.push(game_over))
 
                 self._game_state = next_round
 
-            if self._game_state.lost:
+            elif self._game_state.lost:
                 game_over = GameOverScreen(self._queue, self._renderer, self._game_state, self._run_state, None)
                 self._queue.push(ScreenTransition.push(game_over))
 

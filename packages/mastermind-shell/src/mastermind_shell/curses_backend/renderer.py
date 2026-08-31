@@ -15,7 +15,7 @@ class CursesRenderer:
     _WIN_STR: str = "You won, let's go to the next round."
     _RUN_WIN_STR: str = "You finished the run"
     _LOOSE_STR: str = "You lost, you must restart haha..."
-    _RUN_OVER_STR: str = "You finished the run, good for you."
+    _RUN_OVER_STR: str = "You finished the run, good for you. Do you want an endless mode ?"
     _PANEL_WIDTH: int = 22
 
 
@@ -62,12 +62,40 @@ class CursesRenderer:
         y = curses.LINES - 3
         self._stdscr.addstr(y, self._PANEL_WIDTH + 2, "LEFT/RIGHT: box    UP/DOWN: color    ENTER: submit")
 
-    def render_run_over(self) -> None:
+
+    def render_run_over(self, selected: int) -> None:
+        y = curses.LINES // 2
         self._stdscr.addstr(
-            curses.LINES // 2,
-            (curses.COLS + len(self._RUN_OVER_STR)) // 2,
+            y,
+            (curses.COLS - len(self._RUN_OVER_STR)) // 2,
             self._RUN_OVER_STR,
             curses.A_STANDOUT)
+        
+        width = 17
+        height = 5
+        boxes_width = width * 2 + 5
+        y += 1
+        x = (curses.COLS - boxes_width) // 2
+
+        self._render_rectangle_with_centered_text(selected == 0, y, x, width, height, "YES")
+
+        x += width + 5
+        self._render_rectangle_with_centered_text(selected == 1, y, x, width, height, "NO")
+
+
+    def _render_rectangle_with_centered_text(self, selected: bool, y: int, x: int, width: int, height: int, text: str) -> None:
+        border_attr = curses.color_pair(7) if selected else curses.A_NORMAL
+        self._stdscr.attron(border_attr)
+        rectangle(self._stdscr, y, x, y + height, x + width)
+        self._stdscr.attroff(border_attr)
+
+        self._stdscr.addstr(
+            y + (height // 2),
+            x + (width // 2),
+            text,
+            curses.A_NORMAL)
+
+
 
     def render_win(self, correct_guess_str: str) -> None:
         self._stdscr.addstr(

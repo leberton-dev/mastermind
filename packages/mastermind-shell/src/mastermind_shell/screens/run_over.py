@@ -11,23 +11,28 @@ from mastermind_shell.engine.transition import ScreenTransition
 from mastermind_shell.screens.shop import ShopScreen
 
 
-class GameOverScreen(Screen):
+class RunOverScreen(Screen):
     def __init__(self, queue: ScreenQueue, renderer: Renderer, state: GameState, run_state: RunState, next_state: GameState | None) -> None:
         super().__init__(queue, False)
         self._renderer: Renderer = renderer
         self._game_state: GameState = state
         self._run_state: RunState = run_state
         self._next_state: GameState | None = next_state
+        self._cursor_idx: int = 0
 
 
     @override
     def handle_input(self, event: InputEvent) -> None:
-        self._queue.push(ScreenTransition.pop())
-        if self._game_state.won:
-            assert self._next_state is not None
-            self._queue.push(ScreenTransition.push(ShopScreen(self._queue, self._renderer, self._run_state, self._next_state)))
-        else:
-            self._queue.push(ScreenTransition.pop())
+        if event == InputEvent.RIGHT or event == InputEvent.LEFT:
+            self._cursor_idx = 1 if self._cursor_idx == 0 else 0
+        if event == InputEvent.CONFIRM:
+            if self._cursor_idx == 0:
+                self._run_state.set_max_stages(1000)
+                self._queue.push(ScreenTransition.pop())
+                self._queue.push(ScreenTransition.push(ShopScreen(self._queue, self._renderer, self._run_state, self._next_state)))
+            else:
+                self._queue.push(ScreenTransition.pop())
+                self._queue.push(ScreenTransition.pop())
 
 
     @override
@@ -37,7 +42,4 @@ class GameOverScreen(Screen):
 
     @override
     def render(self) -> None:
-        if self._game_state.won:
-            self._renderer.render_win(f"You found {[c.name for c in self._game_state.secret_code]}")
-        else:
-            self._renderer.render_loose(f"Correct was {[c.name for c in self._game_state.secret_code]}")
+        self._renderer.render_run_over(self._cursor_idx)
