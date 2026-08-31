@@ -12,9 +12,10 @@ from mastermind_overlay.boss_mutators.mutator import BossMutator
 
 class RunState:
     _BASE_TARGET_SCORE: int = 9
-    _BASE_MAX_TURNS: int = 10
+    _BASE_GAMESTATE_MAX_TURNS: int = 10
     _TARGET_SCORE_GROWTH: float = 1.24
     _TIER_ORDER: tuple[RoundTier, ...] = (RoundTier.STANDARD, RoundTier.HARDENED, RoundTier.FINAL)
+    _MAX_RUN_STAGES: int = 2
 
 
     def __init__(self) -> None:
@@ -50,6 +51,10 @@ class RunState:
     def max_relics(self) -> int:
         return self._max_relics
 
+    @property
+    def run_over(self) -> bool:
+        return self._stage >= self._MAX_RUN_STAGES
+
 
     def advance_round_tier(self) -> None:
         self._tier_idx += 1
@@ -68,7 +73,7 @@ class RunState:
         target = round(stage_base * self.tier.multiplier)
         mutator: BossMutator | None = self._pick_mutator() if self.tier.is_final else None
         self._events.publish(RoundStarted(self.tier))
-        return GameState(self._BASE_MAX_TURNS, target, self._relics, mutator)
+        return GameState(self._BASE_GAMESTATE_MAX_TURNS, target, self._relics, mutator)
 
 
     def _pick_mutator(self) -> BossMutator:
