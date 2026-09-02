@@ -1,6 +1,7 @@
 from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
 
+from mastermind_overlay.jokers.jokers import Joker
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.scoring.pipeline import ScoringPipeline
 from mastermind_overlay.scoring.points import apply_multiplier, compute_points
@@ -8,7 +9,7 @@ from mastermind_overlay.boss_mutators.mutator import BossMutator
 
 
 class GameState:
-    def __init__(self, max_turns: int, target_score: int, relics: list[Relic], mutator: BossMutator | None = None) -> None:
+    def __init__(self, max_turns: int, target_score: int, relics: list[Relic], jokers: list[Joker], mutator: BossMutator | None = None) -> None:
         self._max_turns: int = max_turns
         self._target_score: int = target_score
         self._current_turn: int = 0
@@ -21,6 +22,7 @@ class GameState:
         self._guessed_feedback: list[CodeFeedback] = []
         self._score: int = 0
         self._relics: list[Relic] = relics
+        self._jokers: list[Joker] = jokers
         self._pipeline: ScoringPipeline = ScoringPipeline(relics)
 
     @property
@@ -77,6 +79,10 @@ class GameState:
             raise ValueError("Code already exists in guessed codes")
         self._guessed_codes.append(self._current_code)
         feedback: CodeFeedback = self._secret_code.feedback(self._current_code)
+
+        for joker in self._jokers:
+            feedback = joker.on_feedback(feedback)
+
         displayed_feedback = feedback
         if self._mutator is not None:
             displayed_feedback = self._mutator.transform_feedback(feedback)
