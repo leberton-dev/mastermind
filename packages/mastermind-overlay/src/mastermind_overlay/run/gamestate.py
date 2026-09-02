@@ -1,7 +1,7 @@
 from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
 
-from mastermind_overlay.jokers.jokers import Joker
+from mastermind_overlay.jokers.jokers import Joker, JokerContext
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.scoring.pipeline import ScoringPipeline
 from mastermind_overlay.scoring.points import apply_multiplier, compute_points
@@ -78,10 +78,18 @@ class GameState:
         if self._current_code in self._guessed_codes:
             raise ValueError("Code already exists in guessed codes")
         self._guessed_codes.append(self._current_code)
-        feedback: CodeFeedback = self._secret_code.feedback(self._current_code)
+
+        context = JokerContext(
+            guess = self._current_code,
+            secret = self._secret_code,
+            feedback = self._secret_code.feedback(self._current_code),
+            turn = self._current_turn
+        )
 
         for joker in self._jokers:
-            feedback = joker.on_feedback(feedback)
+            context = joker.on_feedback(context)
+
+        feedback = context.feedback
 
         displayed_feedback = feedback
         if self._mutator is not None:

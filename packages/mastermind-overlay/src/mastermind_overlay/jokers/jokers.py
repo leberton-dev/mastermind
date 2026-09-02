@@ -4,9 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import override
 
+from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
-
-from mastermind_overlay.scoring.points import Points
 
 
 class JokerGrade(Enum):
@@ -17,11 +16,19 @@ class JokerGrade(Enum):
 
 
 @dataclass(frozen=True)
+class JokerContext:
+    guess: Code
+    secret: Code
+    feedback: CodeFeedback
+    turn: int
+
+
+@dataclass(frozen=True)
 class JokerSpec:
     key: str
     description: str
     grade: JokerGrade
-    effect: Callable[[CodeFeedback], CodeFeedback]
+    effect: Callable[[JokerContext], JokerContext]
 
 
 _PRICE_RANGES: dict[JokerGrade, tuple[int, int]] = {
@@ -46,8 +53,8 @@ class Joker:
     def grade(self) -> JokerGrade:
         return self.spec.grade
 
-    def on_feedback(self, feedback: CodeFeedback) -> CodeFeedback:
-        return self.spec.effect(feedback)
+    def on_feedback(self, context: JokerContext) -> JokerContext:
+        return self.spec.effect(context)
 
     @override
     def __str__(self) -> str:

@@ -1,10 +1,14 @@
+from mastermind_kernel.colors import PegColor
 from mastermind_kernel.feedback import CodeFeedback
 from mastermind_overlay.jokers.jokers import JokerContext, JokerGrade, JokerSpec
 
 
 def effect(context: JokerContext) -> JokerContext:
-    if context.feedback.won:
-        return context
+    found_colors: list[PegColor] = []
+    for c in context.guess.pegs:
+        if c in found_colors:
+            return context
+        found_colors.append(c)
 
     context = JokerContext(
         guess=context.guess,
@@ -19,8 +23,8 @@ def effect(context: JokerContext) -> JokerContext:
 
 
 SPEC = JokerSpec(
-    "multicolor",
-    "Counts as any color of the board (adds a black peg)",
+    "greedy",
+    "Add 1 black peg if the guess contains 4 different colors",
     JokerGrade.ADVANCED,
     effect,
 )
