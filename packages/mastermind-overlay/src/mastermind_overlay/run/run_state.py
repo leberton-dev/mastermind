@@ -24,7 +24,7 @@ class RunState:
         self._relics: list[Relic] = []
         self._jokers: list[Joker] = []
         self._max_relics: int = 5
-        self._currency: int = 0
+        self._currency: int = 30
         self._tier_idx: int = 0
         self._events: EventBus = EventBus()
         self._max_run_stages: int = self._MAX_RUN_STAGES
@@ -106,6 +106,11 @@ class RunState:
         if len(self._relics) >= self._max_relics:
             return False
         self._relics.append(relic)
+        return True
+
+
+    def add_joker(self, joker: Joker) -> bool:
+        self._jokers.append(joker)
         return True
 
 

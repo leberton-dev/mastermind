@@ -32,6 +32,7 @@ class JokerBoosterShop(Screen):
         if event == InputEvent.RIGHT:
             self._cursor = (self._cursor + 1) % 5
         if event == InputEvent.CONFIRM:
+            _ = self._run_state.add_joker(self._jokers[self._cursor])
             self._queue.push(ScreenTransition.pop())
 
 

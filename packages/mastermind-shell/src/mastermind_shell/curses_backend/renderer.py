@@ -8,6 +8,7 @@ from mastermind_overlay.jokers.jokers import Joker
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
 
+from mastermind_overlay.run.run_state import RunState
 from mastermind_shell.curses_backend import palette
 
 
@@ -49,10 +50,10 @@ class CursesRenderer:
         self._stdscr.addstr(y, x, text, attr)
 
 
-    def render_gameplay(self, state: GameState, stage: int, tier_label: str, relics: list[Relic]) -> None:
+    def render_gameplay(self, state: GameState, stage: int, tier_label: str, relics: list[Relic], jokers: list[Joker], run_state: RunState) -> None:
         self._stdscr.clear()
         self._draw_frame()
-        self._render_left_panel(stage, state.score, state.target_score, state.turns_left, tier_label, relics)
+        self._render_left_panel(stage, state.score, state.target_score, state.turns_left, tier_label, relics, jokers, run_state)
         self._draw_guessed_squares(state.guessed_codes, state.guessed_feedback)
         self._draw_guess_squares(state.current_peg, state.current_code)
         self._render_commands()
@@ -176,15 +177,16 @@ class CursesRenderer:
             y_pos += square_height + 1
 
 
-    def _render_left_panel(self, stage: int, score: int, target: int, turns_left: int, tier_label: str, relics: list[Relic]) -> None:
+    def _render_left_panel(self, stage: int, score: int, target: int, turns_left: int, tier_label: str, relics: list[Relic], jokers: list[Joker], run_state: RunState) -> None:
         x = 2
         y = 1
         for line in (
-            f"STAGE  : {stage}",
-            f"TIER   : {tier_label}",
-            f"SCORE  : {score}",
-            f"TARGET : {target}",
-            f"TURNS  : {turns_left}",
+            f"STAGE    : {stage}",
+            f"TIER     : {tier_label}",
+            f"SCORE    : {score}",
+            f"TARGET   : {target}",
+            f"TURNS    : {turns_left}",
+            f"CURRENCY : ${run_state.currency}",
             ):
             self._stdscr.addstr(y, x, line)
             y += 1
@@ -201,8 +203,20 @@ class CursesRenderer:
             self._stdscr.addstr(y, x, str(relic))
             y += 1
 
+        y += 1
+        self._stdscr.addch(y, 0, curses.ACS_LTEE)
+        self._stdscr.hline(y, 1, curses.ACS_HLINE, self._PANEL_WIDTH - 1)
+        self._stdscr.addch(y, self._PANEL_WIDTH, curses.ACS_RTEE)
+        y += 1
 
-    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int, owned_relics: list[Relic], max_relics: int, reroll_price: int) -> None:
+        self._stdscr.addstr(y, x, "JOKERS")
+        y += 1
+        for joker in jokers:
+            self._stdscr.addstr(y, x, str(joker))
+            y += 1
+
+
+    def render_shop(self, currency: int, offer: list[Relic], extra_guess_price: int, selected: int, owned_relics: list[Relic], max_relics: int, reroll_price: int, joker_price: int) -> None:
         self._stdscr.clear()
         rectangle(self._stdscr, 0, 1, curses.LINES - 2, curses.COLS - 2)
 
@@ -220,7 +234,7 @@ class CursesRenderer:
         self._render_shop_reroll(reroll_price, selected == reroll_idx)
 
         jokers_idx = reroll_idx + 1
-        self._render_shop_joker_booster(selected == jokers_idx)
+        self._render_shop_joker_booster(joker_price, selected == jokers_idx)
 
         leave_idx = jokers_idx + 1
         leave_str = "[ Leave Shop ]"
@@ -231,7 +245,7 @@ class CursesRenderer:
         self._stdscr.refresh()
 
 
-    def _render_shop_joker_booster(self, selected: bool) -> None:
+    def _render_shop_joker_booster(self, price: int, selected: bool) -> None:
         width = 18
         height = 10
         x_pos = curses.COLS - width - 4
@@ -243,7 +257,7 @@ class CursesRenderer:
         self._stdscr.attroff(border_attr)
 
         self._stdscr.addstr(y_pos + (height // 2), x_pos + (width - len("JOKER BOOSTER")) // 2, "JOKER BOOSTER")
-        self._stdscr.addstr(y_pos + (height // 2) + 1, x_pos + (width - len("$5")) // 2, "$5")
+        self._stdscr.addstr(y_pos + (height // 2) + 1, x_pos + (width - len(f"${price}")) // 2, f"${price}")
 
 
     def _render_shop_reroll(self, price: int, selected: bool) -> None:

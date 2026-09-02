@@ -17,6 +17,7 @@ from mastermind_shell.screens.joker_booster import JokerBoosterShop
 
 _OFFER_SIZE: int = 3
 _EXTRA_GUESS_PRICE: int = 8
+_JOKER_PRICE: int = 25
 
 def generate_offer(owned: list[Relic]) -> list[Relic]:
     owned_keys = {relic.spec.key for relic in owned}
@@ -58,9 +59,7 @@ class ShopScreen(Screen):
             elif self._cursor == reroll_idx:
                 self._reroll_offers()
             elif self._cursor == jokers_idx:
-                self._queue.push(ScreenTransition.push(
-                    JokerBoosterShop(self._queue, self._renderer, self._run_state)
-                ))
+                self._buy_joker()
             else:
                 self._queue.push(ScreenTransition.pop())
                 if self._next_state.mutator is not None:
@@ -91,6 +90,7 @@ class ShopScreen(Screen):
             self._run_state.relics,
             self._run_state.max_relics,
             reroll_price,
+            _JOKER_PRICE,
         )
 
 
@@ -126,3 +126,12 @@ class ShopScreen(Screen):
 
         self._run_state.spend(_EXTRA_GUESS_PRICE)
         self._next_state.add_turn()
+
+
+    def _buy_joker(self) -> None:
+        if self._run_state.currency < _JOKER_PRICE:
+            return
+
+        self._run_state.spend(_JOKER_PRICE)
+        self._queue.push(ScreenTransition.push(JokerBoosterShop(self._queue, self._renderer, self._run_state)))
+

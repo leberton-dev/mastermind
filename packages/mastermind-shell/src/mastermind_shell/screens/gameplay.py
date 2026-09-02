@@ -43,8 +43,7 @@ class GameplayScreen(Screen):
 
     @override
     def render(self) -> None:
-        self._renderer.render_gameplay(self._game_state, self._run_state.stage, self._run_state.tier.label, self._run_state.relics)
-
+        self._renderer.render_gameplay(self._game_state, self._run_state.stage, self._run_state.tier.label, self._run_state.relics, self._run_state.jokers, self._run_state)
 
     def _cycle_color_up(self) -> None:
         self._game_state.cycle_color(-1)
