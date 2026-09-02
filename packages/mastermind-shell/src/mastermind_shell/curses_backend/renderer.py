@@ -4,6 +4,7 @@ from curses.textpad import rectangle
 
 from mastermind_kernel.code import Code
 from mastermind_kernel.feedback import CodeFeedback
+from mastermind_overlay.jokers.jokers import Joker
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
 
@@ -218,13 +219,31 @@ class CursesRenderer:
         reroll_idx = len(owned_relics) + len(items)
         self._render_shop_reroll(reroll_price, selected == reroll_idx)
 
-        leave_idx = reroll_idx + 1
+        jokers_idx = reroll_idx + 1
+        self._render_shop_joker_booster(selected == jokers_idx)
+
+        leave_idx = jokers_idx + 1
         leave_str = "[ Leave Shop ]"
         attr = curses.A_STANDOUT if selected == leave_idx else curses.A_NORMAL
         self._stdscr.addstr(curses.LINES - 4, (curses.COLS - len(leave_str)) // 2, leave_str, attr)
 
         self._stdscr.addstr(curses.LINES - 3, 2, "LEFT/RIGHT: select   ENTER: buy/sell/leave")
         self._stdscr.refresh()
+
+
+    def _render_shop_joker_booster(self, selected: bool) -> None:
+        width = 18
+        height = 10
+        x_pos = curses.COLS - width - 4
+        y_pos = curses.LINES - height - 3
+        border_attr = curses.color_pair(7) if selected else curses.A_NORMAL
+
+        self._stdscr.attron(border_attr)
+        rectangle(self._stdscr, y_pos, x_pos, y_pos + height, x_pos + width)
+        self._stdscr.attroff(border_attr)
+
+        self._stdscr.addstr(y_pos + (height // 2), x_pos + (width - len("JOKER BOOSTER")) // 2, "JOKER BOOSTER")
+        self._stdscr.addstr(y_pos + (height // 2) + 1, x_pos + (width - len("$5")) // 2, "$5")
 
 
     def _render_shop_reroll(self, price: int, selected: bool) -> None:
@@ -327,4 +346,37 @@ class CursesRenderer:
             message,
             curses.A_STANDOUT)
         _ = self._stdscr.getch()
+
+
+    def render_joker_booster(self, jokers: list[Joker], selected: int) -> None:
+        self._stdscr.clear()
+        rectangle(self._stdscr, 1, 1, curses.LINES - 2, curses.COLS - 2)
+
+        card_width = 25
+        card_height = 14
+        total_width = card_width * len(jokers) + (len(jokers) - 1)
+        x_start = (curses.COLS - total_width) // 2
+        y_pos = curses.LINES // 2 - card_height // 2
+
+        x = x_start
+        for i, joker in enumerate(jokers):
+            border_attr = curses.color_pair(7) if i == selected else curses.A_NORMAL
+
+            self._stdscr.attron(border_attr)
+            rectangle(self._stdscr, y_pos, x, y_pos + card_height, x + card_width)
+            self._stdscr.attroff(border_attr)
+
+            name_lines = textwrap.wrap(str(joker), card_width - 2)
+            name_y = y_pos + 1
+            for line in name_lines:
+                self._stdscr.addstr(name_y, x + (card_width - len(line)) // 2, line, curses.A_NORMAL)
+                name_y += 1
+
+            desc_lines = textwrap.wrap(joker.description, card_width -2)[:card_height - 4 - len(name_lines)]
+            desc_y = name_y + 1
+            for line in desc_lines:
+                self._stdscr.addstr(desc_y, x + (card_width - len(line)) // 2 + 1, line, curses.A_NORMAL)
+                desc_y += 1
+
+            x += card_width + 1
 

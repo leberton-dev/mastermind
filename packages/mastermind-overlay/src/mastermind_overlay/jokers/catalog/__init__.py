@@ -3,6 +3,7 @@ from mastermind_overlay.jokers.catalog import (
     lucky,
     greedy,
     gambler,
+    chaos,
 )
 from mastermind_overlay.jokers.jokers import JokerSpec
 
@@ -11,4 +12,5 @@ JOKERS: list[JokerSpec] = [
     lucky.SPEC,
     greedy.SPEC,
     gambler.SPEC,
+    chaos.SPEC,
 ]

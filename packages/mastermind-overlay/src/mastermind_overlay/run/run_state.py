@@ -3,6 +3,7 @@ import random
 from mastermind_overlay.economy.currency import reward_for
 from mastermind_overlay.events.bus import EventBus
 from mastermind_overlay.events.catalog.round_started import RoundStarted
+from mastermind_overlay.jokers.jokers import Joker
 from mastermind_overlay.relics.relic import Relic
 from mastermind_overlay.run.gamestate import GameState
 from mastermind_overlay.run.round_tier import RoundTier
@@ -21,6 +22,7 @@ class RunState:
     def __init__(self) -> None:
         self._stage: int = 1
         self._relics: list[Relic] = []
+        self._jokers: list[Joker] = []
         self._max_relics: int = 5
         self._currency: int = 0
         self._tier_idx: int = 0
@@ -39,6 +41,10 @@ class RunState:
     @property
     def relics(self) -> list[Relic]:
         return self._relics
+
+    @property
+    def jokers(self) -> list[Joker]:
+        return self._jokers
 
     @property
     def tier(self) -> RoundTier:
@@ -81,7 +87,7 @@ class RunState:
         max_turns = round(self._BASE_MAX_TURNS - (self._stage - 1))
         mutator: BossMutator | None = self._pick_mutator() if self.tier.is_final else None
         self._events.publish(RoundStarted(self.tier))
-        return GameState(max_turns, target_score, self._relics, mutator)
+        return GameState(max_turns, target_score, self._relics, self._jokers, mutator)
 
 
     def _pick_mutator(self) -> BossMutator:

@@ -13,6 +13,7 @@ from mastermind_shell.engine.screen import Screen
 from mastermind_shell.engine.screen_queue import ScreenQueue
 from mastermind_shell.engine.transition import ScreenTransition
 from mastermind_shell.screens.boss_announcement import BossAnnouncementScreen
+from mastermind_shell.screens.joker_booster import JokerBoosterShop
 
 _OFFER_SIZE: int = 3
 _EXTRA_GUESS_PRICE: int = 8
@@ -40,7 +41,8 @@ class ShopScreen(Screen):
         owned_count = len(self._run_state.relics)
         extra_guess_idx = owned_count + len(self._offer)
         reroll_idx = extra_guess_idx + 1
-        leave_idx = reroll_idx + 1
+        jokers_idx = reroll_idx + 1
+        leave_idx = jokers_idx + 1
 
         if  event == InputEvent.LEFT:
             self._cursor = (self._cursor - 1) % (leave_idx + 1)
@@ -55,6 +57,10 @@ class ShopScreen(Screen):
                 self._buy_extra_guess()
             elif self._cursor == reroll_idx:
                 self._reroll_offers()
+            elif self._cursor == jokers_idx:
+                self._queue.push(ScreenTransition.push(
+                    JokerBoosterShop(self._queue, self._renderer, self._run_state)
+                ))
             else:
                 self._queue.push(ScreenTransition.pop())
                 if self._next_state.mutator is not None:

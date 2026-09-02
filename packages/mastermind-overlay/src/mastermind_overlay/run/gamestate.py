@@ -20,7 +20,7 @@ class GameState:
         self._secret_code: Code = Code.random()
         self._guessed_codes: list[Code] = []
         self._guessed_feedback: list[CodeFeedback] = []
-        self._score: int = 0
+        self._score: int = 14
         self._relics: list[Relic] = relics
         self._jokers: list[Joker] = jokers
         self._pipeline: ScoringPipeline = ScoringPipeline(relics)
