@@ -14,6 +14,11 @@ class Code:
         self._pegs: list[PegColor] = list(colors)
 
 
+    @property
+    def pegs(self) -> list[PegColor]:
+        return self._pegs
+
+
     @classmethod
     def blank(cls) -> "Code":
         return cls([PegColor.WHITE] * 4)
