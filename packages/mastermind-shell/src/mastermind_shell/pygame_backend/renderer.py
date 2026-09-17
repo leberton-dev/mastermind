@@ -81,7 +81,15 @@ class GameRenderer:
         _ = self._surface.blit(self._asset_manager.background, (0, 0))
         _ = self._left_surface.fill((47, 58, 60))
 
-        # Rendu des pegs
+        self._render_current_guess(game_state)
+        self._render_passed_guesses(game_state)
+        self._render_tier(run_state)
+        self._render_score_to_reach(game_state)
+        self._render_round_score(game_state)
+        self._render_turns_left(game_state)
+        self._render_points_and_mult(game_state)
+
+    def _render_current_guess(self, game_state: GameState) -> None:
         sprite_size = 128
         offset = 32
         sprite_and_offset = sprite_size + offset
@@ -92,12 +100,17 @@ class GameRenderer:
             _ = self._surface.blit(self._peg_color_to_asset(peg_color), (x, y))
             x += sprite_and_offset
 
-        # Appels aux méthodes de rendu
-        self._render_tier(run_state)
-        self._render_score_to_reach(game_state)
-        self._render_round_score(game_state)
-        self._render_turns_left(game_state)
-        self._render_points_and_mult(game_state)
+    def _render_passed_guesses(self, game_state: GameState) -> None:
+        sprite_size = 64
+        offset = 16
+        sprite_and_offset = sprite_size + offset
+        all_pegs_width = sprite_and_offset * 4
+        x = self._right_layout.center_x(all_pegs_width) + self._left_layout.width
+        y = sprite_and_offset
+        for guess in game_state.guessed_codes:
+            for peg_color in guess:
+                _ = self._surface.blit(self._peg_color_to_asset(peg_color), (x, y))
+                x += sprite_and_offset
 
 
     def _render_tier(self, run_state: RunState) -> None:
