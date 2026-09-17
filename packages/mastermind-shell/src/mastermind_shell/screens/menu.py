@@ -24,10 +24,10 @@ class MenuScreen(Screen):
         if event == InputEvent.QUIT:
             self._queue.push(ScreenTransition.quit())
         if event == InputEvent.CONFIRM:
-            if self._current == 0:
+            if self._current == 1:
                 gameplay_screen = GameplayScreen(self._queue, self._renderer, self._run_state)
                 self._queue.push(ScreenTransition.push(gameplay_screen))
-            elif self._current == 1:
+            elif self._current == 0:
                 self._queue.push(ScreenTransition.quit())
         if event == InputEvent.PLAY:
             gameplay_screen = GameplayScreen(self._queue, self._renderer, self._run_state)
