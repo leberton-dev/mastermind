@@ -1,46 +1,51 @@
-import curses
-from curses import wrapper
+from pathlib import Path
 
-from mastermind_shell.curses_backend import palette
-from mastermind_shell.curses_backend.input_source import CursesInputSource
-from mastermind_shell.curses_backend.renderer import CursesRenderer
+import pygame
+import pygame_gui
+
+from mastermind_shell.pygame_backend.renderer import PygameRenderer
+from mastermind_shell.pygame_backend.input_source import PygameInputSource
+from mastermind_shell.engine.input_event import InputEvent
 from mastermind_shell.engine.screen_queue import ScreenQueue
 from mastermind_shell.engine.screen_stack import ScreenStack
 from mastermind_shell.screens.menu import MenuScreen
 
-# import debugpy
-
-def _init_curses(stdscr: curses.window) -> None:
-    _ = curses.curs_set(0)
-    stdscr.keypad(True)
-
-    curses.cbreak()
-    curses.noecho()
-    curses.start_color()
-    if not curses.has_colors():
-        raise Exception("Terminal does not have colors")
-    palette.init_color_pairs()
+VIRTUAL_SIZE = (1920, 1280)
 
 
-def main(stdscr: curses.window):
-    _init_curses(stdscr)
+def main(virtual_surface: pygame.Surface, manager: pygame_gui.UIManager):
+    renderer: PygameRenderer = PygameRenderer(virtual_surface, manager)
+    input_source: PygameInputSource = PygameInputSource(manager, VIRTUAL_SIZE)
+    input_source.register_ui_action(renderer.play_button, InputEvent.PLAY)
+    input_source.register_ui_action(renderer.exit_button, InputEvent.EXIT)
 
-    renderer: CursesRenderer = CursesRenderer(stdscr)
-    input_source: CursesInputSource = CursesInputSource(stdscr)
     queue: ScreenQueue = ScreenQueue()
     menu: MenuScreen = MenuScreen(queue, renderer)
     stack: ScreenStack = ScreenStack(input_source, queue, menu)
 
-    while stack.step():
-        pass
+    clock = pygame.time.Clock()
+    running = True
+    while running:
+        dt = clock.tick(60) / 1000
+        manager.update(dt)
+        running = stack.step()
+
+        window = pygame.display.get_surface()
+        scaled = pygame.transform.smoothscale(virtual_surface, window.get_size())
+        _ = window.blit(scaled, (0, 0))
+        pygame.display.flip()
 
 
-def run() -> None:
-    # _ = debugpy.listen(("127.0.0.1", 5678))
-    # print("Waiting for debugger...")
-    # debugpy.wait_for_client()
-    wrapper(main)
+def run():
+    _ = pygame.init()
+    pygame.font.init()
 
+    virtual_surface: pygame.Surface = pygame.Surface(VIRTUAL_SIZE)
+    _ = pygame.display.set_mode(VIRTUAL_SIZE, pygame.RESIZABLE)
 
-if __name__ == "__main__":
-    run()
+    theme_path = Path(__file__).resolve().parent / "pygame_backend" / "theme.json"
+    manager: pygame_gui.UIManager = pygame_gui.UIManager(VIRTUAL_SIZE, theme_path=str(theme_path))
+
+    main(virtual_surface, manager)
+
+    pygame.quit()

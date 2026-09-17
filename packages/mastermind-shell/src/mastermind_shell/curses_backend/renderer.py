@@ -19,6 +19,19 @@ class CursesRenderer:
     _LOOSE_STR: str = "You lost, you must restart haha..."
     _RUN_OVER_STR: str = "You finished the run, good for you. Do you want an endless mode ?"
     _PANEL_WIDTH: int = 22
+    _PLAY_STR: str = """
+   ___  __   _____  __
+  / _ \\/ /  / _ \\ \\/ /
+ / ___/ /__/ __ |\\  /
+/_/  /____/_/ |_|/_/
+"""
+
+    _QUIT_STR: str = """
+   ___  _   _ ___ _____
+  / _ \\| | | |_ _|_   _|
+ | (_) | |_| || |  | |
+  \\__\\_\\\\___/|___| |_|
+"""
 
 
     def __init__(self, stdscr: curses.window) -> None:
@@ -48,6 +61,33 @@ class CursesRenderer:
     def draw_text(self, y: int, x: int, text: str, highlighted: bool = False) -> None:
         attr = curses.A_STANDOUT if highlighted else curses.A_NORMAL
         self._stdscr.addstr(y, x, text, attr)
+
+
+    def render_menu(self, current: int) -> None:
+        self.clear()
+
+        lines, _ = self.dimensions()
+
+        height_play = 0
+        for _ in self._PLAY_STR.strip("\n").splitlines():
+            height_play += 1
+
+        start_y = (lines // 2) - height_play - 1
+        self._render_big_str(start_y, self._PLAY_STR, current == 0)
+        start_y += height_play + 1
+        self._render_big_str(start_y, self._QUIT_STR, current == 1)
+
+        self.refresh()
+
+    def _render_big_str(self, start_y: int, big_text: str, highlighted: bool) -> None:
+        lines_list = big_text.strip('\n').splitlines()
+        max_len = max(len(line) for line in lines_list)
+        _, cols = self.dimensions()
+        start_x = (cols - max_len) // 2
+
+        for line in lines_list:
+            self.draw_text(start_y, start_x, line, highlighted)
+            start_y += 1
 
 
     def render_gameplay(self, state: GameState, stage: int, tier_label: str, relics: list[Relic], jokers: list[Joker], run_state: RunState) -> None:
